@@ -12,7 +12,8 @@ BackendOgl46::~BackendOgl46() = default;
 
 // API methods
 
-unsigned int BackendOgl46::CreateBuffer(void *data, size_t size) {
+unsigned int BackendOgl46::CreateBuffer(void *data, GLBType bufferType,
+                                        size_t size) {
   uint32_t buffer;
   glCreateBuffers(1, &buffer);
   glNamedBufferStorage(buffer, size, data, GL_DYNAMIC_STORAGE_BIT);

@@ -51,19 +51,21 @@ void Device<T>::SetClearArgs(struct ClearArgs args) {
 }
 
 template <typename T>
-uint32_t Device<T>::CreateVao() {
-  return 0;
+uint32_t Device<T>::CreateVao(InputLayoutArgs inputLayout) {
+  return this->gl->CreateVao(inputLayout);
 }
 
 template <typename T>
 uint32_t Device<T>::CreateVbo(float *data, size_t length) {
-  auto buffer = this->gl->CreateBuffer(data, length * sizeof(float));
+  auto buffer = this->gl->CreateBuffer(data, GLBType::GLArrayBuffer,
+                                       length * sizeof(float));
   return buffer;
 }
 
 template <typename T>
 uint32_t Device<T>::CreateIbo(int *data, size_t length) {
-  auto buffer = this->gl->CreateBuffer(data, length * sizeof(unsigned int));
+  auto buffer = this->gl->CreateBuffer(data, GLBType::GLElementBuffer,
+                                       length * sizeof(unsigned int));
   return 0;
 }
 

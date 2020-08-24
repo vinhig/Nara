@@ -10,6 +10,8 @@
 
 #include <iostream>
 
+#include "../common/Array.h"
+#include "Args.h"
 #include "Backend.h"
 
 class BackendOgl33 : public Backend {
@@ -20,12 +22,11 @@ class BackendOgl33 : public Backend {
   ~BackendOgl33();
 
   // API methods
-  unsigned int CreateBuffer(void *data, size_t size) override;
+  unsigned int CreateBuffer(void *data, GLBType bufferType,
+                            size_t size) override;
   void ClearColor(float red, float green, float blue, float alpha) override;
   void Clear(bool color_buffer, bool depth_buffer) override;
-  unsigned int CreateInputLayout(Array<unsigned int> buffers) override {
-    return 0;
-  };
+  uint32_t CreateVao(InputLayoutArgs inputLayout) override;
 
   // Device methods
   void Init() override;

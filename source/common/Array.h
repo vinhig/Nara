@@ -21,30 +21,55 @@ class Array {
   unsigned int size;
 
  public:
+  Array() = default;
   /**
    * Create an extensible array with a given memory size.
    * this->count = 0
    */
-  Array(unsigned int size);
+  Array(unsigned int size) {
+    this->items = (T*)malloc(sizeof(T) * size);
+    this->size = size;
+    this->count = 0;
+  };
+  ;
   /**
    * Delete the extensible array and free memory
    */
-  ~Array();
+  ~Array() {
+    /*if (this->items != nullptr) {
+      free(this->items);
+      this->items = nullptr;
+    }*/
+  }
   /**
    * Add a new item.
    * Reallocate memory if this->size < this.count + 1.
    */
-  void Add(T item);
+  void Add(T item) {
+    if (size == count) {
+      this->items = (T*)realloc(this->items, sizeof(T) * (size + 10));
+      this->size += 10;
+    }
+    this->items[this->count] = item;
+    this->count++;
+  }
   /**
    * Return the last item.
    * Reallocate memory if this->size < this.count + 1.
    */
-  T& Last();
+  T& Last() { return this->items[this->count - 1]; }
   /**
    * Remove the last item.
    * Reallocate memory if this->size < this.count + 1.
    */
-  T PopLast();
+  T PopLast() {
+    if (count == 0) {
+      throw std::runtime_error("Index out of bounds.");
+    }
+    T item = this->items[this->count - 1];
+    this->count--;
+    return item;
+  }
   unsigned int Size() const { return this->size; };
   unsigned int Count() const { return this->count; };
   /**
@@ -57,8 +82,5 @@ class Array {
     return items[i];
   }
 };
-
-template class Array<unsigned int>;
-template class Array<int>;
 
 #endif  // NARA_SOURCE_COMMON_ARRAY_H_

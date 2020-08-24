@@ -12,12 +12,13 @@ BackendOgl33::~BackendOgl33() = default;
 
 // API methods
 
-unsigned int BackendOgl33::CreateBuffer(void *data, size_t size) {
+unsigned int BackendOgl33::CreateBuffer(void *data, GLBType bufferType,
+                                        size_t size) {
   uint32_t buffer;
   glGenBuffers(1, &buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, buffer);
-  glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindBuffer((GLenum)bufferType, buffer);
+  glBufferData((GLenum)bufferType, size, data, GL_STATIC_DRAW);
+  glBindBuffer((GLenum)bufferType, 0);
 
   return buffer;
 }
@@ -34,6 +35,25 @@ void BackendOgl33::Clear(bool color_buffer, bool depth_buffer) {
   } else if (color_buffer /*&& depth_buffer*/) {
     glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   }
+}
+
+uint32_t BackendOgl33::CreateVao(InputLayoutArgs inputLayout) {
+  uint32_t vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+  int sum = 0;
+  for (size_t i = 0; i < inputLayout.entries.Count(); i++) {
+    auto entry = inputLayout.entries[i];
+    glBindBuffer(GL_ARRAY_BUFFER, entry.buffer);
+    glVertexAttribPointer(entry.index, entry.size, (GLenum)entry.subtype,
+                          entry.normalized ? GL_TRUE : GL_FALSE, entry.stride,
+                          (const void *)sum);
+    sum += entry.stride;
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+  glBindVertexArray(0);
+
+  return vao;
 }
 
 // Device methods

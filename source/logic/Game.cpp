@@ -33,7 +33,14 @@ void Game<T>::Run() {
   int indices[] = {0, 1, 2, 2, 3, 0};
   uint32_t vbo = this->device->CreateVbo(vertices, _countof(vertices));
   uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
-  // uint32_t vao = this->device->CreateVao
+
+  InputLayoutArgs inputLayout = {};
+  Array<InputLayoutEntryArgs> entries(3);
+  entries.Add({0, 3, false, 0, vbo, GLCType::GLFLoat});
+  inputLayout.entries = entries;
+
+  uint32_t vao = this->device->CreateVao(inputLayout);
+
   while (this->device->IsOpen()) {
     this->Update();
     ClearArgs args = {.framebuffer = 0,

@@ -26,7 +26,7 @@ class Device {
 
   // Device method ACT
   void Clear();
-  uint32_t CreateVao();
+  uint32_t CreateVao(InputLayoutArgs inputLayout);
   uint32_t CreateVbo(float *data, size_t length);
   uint32_t CreateIbo(int *data, size_t length);
   void Swap();

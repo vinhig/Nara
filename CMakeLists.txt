@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(Nara)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 11)
 
 enable_testing()
 add_subdirectory(source/tests)
@@ -10,10 +10,10 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
-add_library(common
-    source/common/Array.h source/common/Array.cpp
-    source/common/Macros.h
-)
+# add_library(common
+#    source/common/Array.h
+#    source/common/Macros.h
+# )
 
 add_library(renderer
     source/renderer/Device.cpp source/renderer/Device.h
@@ -31,7 +31,7 @@ add_executable(Nara
     source/main.cpp
 )
 
-target_link_libraries(Nara common)
+# target_link_libraries(Nara common)
 target_link_libraries(Nara renderer)
 target_link_libraries(Nara logic)
 target_link_libraries(Nara glfw)

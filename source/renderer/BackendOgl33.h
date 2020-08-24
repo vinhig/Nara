@@ -23,6 +23,9 @@ class BackendOgl33 : public Backend {
   unsigned int CreateBuffer(void *data, size_t size) override;
   void ClearColor(float red, float green, float blue, float alpha) override;
   void Clear(bool color_buffer, bool depth_buffer) override;
+  unsigned int CreateInputLayout(Array<unsigned int> buffers) override {
+    return 0;
+  };
 
   // Device methods
   void Init() override;

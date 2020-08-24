@@ -5,9 +5,10 @@
 #ifndef NARA_SOURCE_RENDERER_BACKEND_H_
 #define NARA_SOURCE_RENDERER_BACKEND_H_
 
-#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <iostream>
 
 class Backend {
  public:
@@ -25,4 +26,4 @@ class Backend {
   virtual void SwapBuffers() = 0;
 };
 
-#endif //NARA_SOURCE_RENDERER_BACKEND_H_
+#endif  // NARA_SOURCE_RENDERER_BACKEND_H_

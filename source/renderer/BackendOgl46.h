@@ -29,4 +29,4 @@ class BackendOgl46 : public Backend {
   void SwapBuffers() override;
 };
 
-#endif //NARA_BACKENDOGL46_H
+#endif  // NARA_BACKENDOGL46_H

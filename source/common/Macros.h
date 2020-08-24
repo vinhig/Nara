@@ -7,4 +7,4 @@
 
 #define _countof(array) (sizeof(array) / sizeof(array[0]))
 
-#endif //NARA_SOURCE_COMMON_MACROS_H_
+#endif  // NARA_SOURCE_COMMON_MACROS_H_

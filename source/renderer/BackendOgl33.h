@@ -5,9 +5,11 @@
 #ifndef NARA_BACKEND_H
 #define NARA_BACKEND_H
 
-#include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <iostream>
+
 #include "Backend.h"
 
 class BackendOgl33 : public Backend {
@@ -29,18 +31,15 @@ class BackendOgl33 : public Backend {
   void Destroy() override;
   std::string Name() override;
   void SwapBuffers() override;
-  static void GLAPIENTRY
-  MessageCallback(GLenum source,
-				  GLenum type,
-				  GLuint id,
-				  GLenum severity,
-				  GLsizei length,
-				  const GLchar *message,
-				  const void *userParam) {
-	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-			(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-			type, severity, message);
+  static void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id,
+                                         GLenum severity, GLsizei length,
+                                         const GLchar *message,
+                                         const void *userParam) {
+    fprintf(stderr,
+            "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+            (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type,
+            severity, message);
   }
 };
 
-#endif //NARA_BACKEND_H
+#endif  // NARA_BACKEND_H

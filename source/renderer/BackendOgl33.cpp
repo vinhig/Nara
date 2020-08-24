@@ -28,11 +28,11 @@ void BackendOgl33::ClearColor(float red, float green, float blue, float alpha) {
 
 void BackendOgl33::Clear(bool color_buffer, bool depth_buffer) {
   if (color_buffer && !depth_buffer) {
-	glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
   } else if (!color_buffer && depth_buffer) {
-	glClear(GL_DEPTH_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
   } else if (color_buffer /*&& depth_buffer*/) {
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
   }
 }
 
@@ -41,7 +41,7 @@ void BackendOgl33::Clear(bool color_buffer, bool depth_buffer) {
 void BackendOgl33::Init() {
   std::cout << "Hello 33" << std::endl;
   if (!glfwInit()) {
-	throw std::runtime_error("Unable to init GLFW.");
+    throw std::runtime_error("Unable to init GLFW.");
   }
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -49,15 +49,15 @@ void BackendOgl33::Init() {
 
   this->window = glfwCreateWindow(1024, 768, "Nara Opengl 3.3", NULL, NULL);
   if (!this->window) {
-	// throw std::runtime_error("Unable to create a window.");
-	// Don't interrupt
-	this->suitable = false;
-	return;
+    // throw std::runtime_error("Unable to create a window.");
+    // Don't interrupt
+    this->suitable = false;
+    return;
   }
   glfwMakeContextCurrent(this->window);
 
   if (GLEW_OK != glewInit()) {
-	throw std::runtime_error("Unable to init GLEW.");
+    throw std::runtime_error("Unable to init GLEW.");
   }
 
   glEnable(GL_DEBUG_OUTPUT);
@@ -66,23 +66,15 @@ void BackendOgl33::Init() {
   this->suitable = true;
 };
 
-bool BackendOgl33::IsOpen() {
-  return !glfwWindowShouldClose(window);
-}
+bool BackendOgl33::IsOpen() { return !glfwWindowShouldClose(window); }
 
-bool BackendOgl33::IsSuitable() {
-  return this->suitable;
-};
+bool BackendOgl33::IsSuitable() { return this->suitable; };
 
 void BackendOgl33::Destroy() {
   glfwDestroyWindow(this->window);
   glfwTerminate();
 }
 
-std::string BackendOgl33::Name() {
-  return "OpenGL 3.3";
-}
+std::string BackendOgl33::Name() { return "OpenGL 3.3"; }
 
-void BackendOgl33::SwapBuffers() {
-  glfwSwapBuffers(this->window);
-}
+void BackendOgl33::SwapBuffers() { glfwSwapBuffers(this->window); }

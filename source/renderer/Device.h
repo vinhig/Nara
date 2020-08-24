@@ -9,12 +9,13 @@
 #include "BackendOgl33.h"
 #include "BackendOgl46.h"
 
-template<typename T>
+template <typename T>
 class Device {
  private:
   Backend *gl;
   // Clear ARGS
   ClearArgs clear_args_;
+
  public:
   Device();
   ~Device();
@@ -34,9 +35,7 @@ class Device {
   void SetClearArgs(struct ClearArgs args);
 };
 
-template
-class Device<BackendOgl33>;
-template
-class Device<BackendOgl46>;
+template class Device<BackendOgl33>;
+template class Device<BackendOgl46>;
 
-#endif //NARA_DEVICE_H
+#endif  // NARA_DEVICE_H

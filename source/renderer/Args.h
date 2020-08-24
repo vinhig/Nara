@@ -12,4 +12,4 @@ struct ClearArgs {
   bool depth_buffer;
 };
 
-#endif //NARA_SOURCE_RENDERER_ARGS_H_
+#endif  // NARA_SOURCE_RENDERER_ARGS_H_

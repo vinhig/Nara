@@ -18,6 +18,7 @@ class BackendOgl33 : public Backend {
   ~BackendOgl33();
 
   // API methods
+  unsigned int CreateBuffer(void *data, size_t size) override;
   void ClearColor(float red, float green, float blue, float alpha) override;
   void Clear(bool color_buffer, bool depth_buffer) override;
 
@@ -28,6 +29,18 @@ class BackendOgl33 : public Backend {
   void Destroy() override;
   std::string Name() override;
   void SwapBuffers() override;
+  static void GLAPIENTRY
+  MessageCallback(GLenum source,
+				  GLenum type,
+				  GLuint id,
+				  GLenum severity,
+				  GLsizei length,
+				  const GLchar *message,
+				  const void *userParam) {
+	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+			(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+			type, severity, message);
+  }
 };
 
 #endif //NARA_BACKEND_H

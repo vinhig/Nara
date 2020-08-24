@@ -25,9 +25,9 @@ class Device {
 
   // Device method ACT
   void Clear();
-  unsigned int CreateVao();
-  unsigned int CreateVbo(float *data, size_t length);
-  unsigned int CreateIbo(unsigned int *data, size_t length);
+  uint32_t CreateVao();
+  uint32_t CreateVbo(float *data, size_t length);
+  uint32_t CreateIbo(int *data, size_t length);
   void Swap();
 
   // Device method SET

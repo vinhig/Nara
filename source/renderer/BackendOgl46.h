@@ -6,15 +6,17 @@
 #define NARA_BACKENDOGL46_H
 
 #include "Backend.h"
+#include "BackendOgl33.h"
 
 class BackendOgl46 : public Backend {
  public:
-  bool suitable = false;
+  bool suitable_ = false;
   GLFWwindow *window{};
   BackendOgl46();
   ~BackendOgl46();
 
   // API methods
+  unsigned int CreateBuffer(void *data, size_t size) override;
   void ClearColor(float red, float green, float blue, float alpha) override;
   void Clear(bool color_buffer, bool depth_buffer) override;
 

@@ -12,6 +12,16 @@ BackendOgl33::~BackendOgl33() = default;
 
 // API methods
 
+unsigned int BackendOgl33::CreateBuffer(void *data, size_t size) {
+  uint32_t buffer;
+  glGenBuffers(1, &buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  return buffer;
+}
+
 void BackendOgl33::ClearColor(float red, float green, float blue, float alpha) {
   glClearColor(red, green, blue, alpha);
 };
@@ -49,6 +59,9 @@ void BackendOgl33::Init() {
   if (GLEW_OK != glewInit()) {
 	throw std::runtime_error("Unable to init GLEW.");
   }
+
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(BackendOgl33::MessageCallback, nullptr);
 
   this->suitable = true;
 };

@@ -14,6 +14,7 @@ class Backend {
   // API methods
   virtual void ClearColor(float red, float green, float blue, float alpha) = 0;
   virtual void Clear(bool color_buffer, bool depth_buffer) = 0;
+  virtual unsigned int CreateBuffer(void* data, size_t size) = 0;
 
   // Device methods
   virtual void Init() = 0;

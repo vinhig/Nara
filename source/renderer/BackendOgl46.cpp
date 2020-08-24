@@ -12,6 +12,14 @@ BackendOgl46::~BackendOgl46() = default;
 
 // API methods
 
+unsigned int BackendOgl46::CreateBuffer(void *data, size_t size) {
+  uint32_t buffer;
+  glCreateBuffers(1, &buffer);
+  glNamedBufferStorage(buffer, size, data, GL_DYNAMIC_STORAGE_BIT);
+
+  return buffer;
+}
+
 void BackendOgl46::ClearColor(float red, float green, float blue, float alpha) {
   glClearColor(red, green, blue, alpha);
 }
@@ -41,7 +49,7 @@ void BackendOgl46::Init() {
   if (!this->window) {
 	// throw std::runtime_error("Unable to create a window.");
 	// Don't interrupt
-	this->suitable = false;
+	this->suitable_ = false;
 	return;
   }
   glfwMakeContextCurrent(this->window);
@@ -50,15 +58,18 @@ void BackendOgl46::Init() {
 	throw std::runtime_error("Unable to init GLEW.");
   }
 
-  this->suitable = true;
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(BackendOgl33::MessageCallback, nullptr);
+
+  this->suitable_ = true;
 }
 
 bool BackendOgl46::IsOpen() {
-  return false;
+  return !glfwWindowShouldClose(window);
 };
 
 bool BackendOgl46::IsSuitable() {
-  return this->suitable;
+  return this->suitable_;
 };
 
 void BackendOgl46::Destroy() {

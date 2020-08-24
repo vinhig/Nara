@@ -27,12 +27,19 @@ void Game<T>::Update() {
 
 template<class T>
 void Game<T>::Run() {
-  float data[] = {
-  	0.0f, 0.0f, 0.0f,
-  	0.0f, 1.0f, 0.0,
-  	1.0f, 1.0f, 0.0f,
+  float vertices[] = {
+	  -1.0f, 1.0f, 0.0f,
+	  1.0f, 1.0f, 0.0,
+	  1.0f, -1.0f, 0.0f,
+	  -1.0f, -1.0f, 0.0f,
   };
-  this->device->CreateVbo(data, _countof(data));
+  int indices[] = {
+	  0, 1, 2,
+	  2, 3 , 0
+  };
+  uint32_t vbo = this->device->CreateVbo(vertices, _countof(vertices));
+  uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
+  uint32_t vao = this->device->CreateVao
   while (this->device->IsOpen()) {
 	this->Update();
 	ClearArgs args = {

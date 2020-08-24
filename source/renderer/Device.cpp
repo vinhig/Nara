@@ -49,18 +49,19 @@ void Device<T>::SetClearArgs(struct ClearArgs args) {
 }
 
 template<typename T>
-unsigned int Device<T>::CreateVao() {
+uint32_t Device<T>::CreateVao() {
   return 0;
 }
 
 template<typename T>
-unsigned int Device<T>::CreateVbo(float *data, size_t length) {
-  std::cout << length << std::endl;
-  return 0;
+uint32_t Device<T>::CreateVbo(float *data, size_t length) {
+  auto buffer = this->gl->CreateBuffer(data, length * sizeof(float));
+  return buffer;
 }
 
 template<typename T>
-unsigned int Device<T>::CreateIbo(unsigned int *data, size_t length) {
+uint32_t Device<T>::CreateIbo(int *data, size_t length) {
+  auto buffer = this->gl->CreateBuffer(data, length * sizeof(unsigned int));
   return 0;
 }
 

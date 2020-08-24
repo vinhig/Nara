@@ -2,12 +2,12 @@
 #include "renderer/Device.h"
 #include "logic/Game.h"
 
-template <class B>
+template<class B>
 void Launch() {
   auto *my_game = new Game<B>();
   auto *device = new Device<B>();
   if (device->InitBackend()) {
-    std::string version = "B.Name()";
+	std::string version = "B.Name()";
 	std::cout << "Unable to create an " << version << " context." << std::endl;
 	delete device;
 	throw std::runtime_error("Unable to create a graphics device.");
@@ -16,7 +16,6 @@ void Launch() {
 	  throw std::runtime_error("Game refused the device.");
 	}
   }
-
   my_game->Run();
 }
 
@@ -33,7 +32,7 @@ int main(int argc, char *argv[]) {
 	  std::cout << "Unknown argument: " << argv[1] << std::endl;
 	}
   } else {
-    gl_33 = true;
+	gl_33 = true;
   }
 
   if (!gl_33 && !gl_46 || gl_46) {

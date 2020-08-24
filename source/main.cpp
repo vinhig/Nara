@@ -1,8 +1,8 @@
 #include <iostream>
 
+#include "common/Array.h"
 #include "logic/Game.h"
 #include "renderer/Device.h"
-#include "common/Array.h"
 
 template <class B>
 void Launch() {

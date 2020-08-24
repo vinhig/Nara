@@ -33,7 +33,7 @@ void Game<T>::Run() {
   int indices[] = {0, 1, 2, 2, 3, 0};
   uint32_t vbo = this->device->CreateVbo(vertices, _countof(vertices));
   uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
-  // uint32_t vao = this->device->CreateVao 
+  // uint32_t vao = this->device->CreateVao
   while (this->device->IsOpen()) {
     this->Update();
     ClearArgs args = {.framebuffer = 0,

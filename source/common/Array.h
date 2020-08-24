@@ -33,7 +33,7 @@ class Array {
   };
   ;
   /**
-   * Delete the extensible array and free memory
+   * Delete the extensible array and free memory.
    */
   ~Array() {
     /*if (this->items != nullptr) {
@@ -46,12 +46,24 @@ class Array {
    * Reallocate memory if this->size < this.count + 1.
    */
   void Add(T item) {
-    if (size == count) {
+    if (size = 0) {
+      this->items = (T*)realloc(this->items, sizeof(T) * 10);
+      this->size = 10;
+    } else if (size == count) {
       this->items = (T*)realloc(this->items, sizeof(T) * (size + 10));
       this->size += 10;
     }
     this->items[this->count] = item;
     this->count++;
+  }
+  /**
+   * Delete the extensible array and free memory.
+   */
+  void Dispose() {
+    free(this->items);
+    this->items = nullptr;
+    this->count = 0;
+    this->size = 0;
   }
   /**
    * Return the last item.

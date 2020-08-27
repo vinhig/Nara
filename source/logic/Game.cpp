@@ -32,7 +32,7 @@ void Game<T>::Run() {
   };
   int indices[] = {0, 1, 2, 2, 3, 0};
   uint32_t vbo = this->device->CreateVbo(vertices, _countof(vertices));
-  uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
+  // uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
 
   InputLayoutArgs inputLayout = {};
   Array<InputLayoutEntryArgs> entries(3);
@@ -41,14 +41,22 @@ void Game<T>::Run() {
 
   uint32_t vao = this->device->CreateVao(inputLayout);
 
+  uint32_t basicProgram = this->device->CreateProgram("assets/shaders/basic");
+
   while (this->device->IsOpen()) {
     this->Update();
-    ClearArgs args = {.framebuffer = 0,
+    /*ClearArgs args = {.framebuffer = 0,
                       .color = {1.0f, 0.0f, 1.0f, 1.0f},
                       .color_buffer = true,
-                      .depth_buffer = true};
-    this->device->SetClearArgs(args);
+                      .depth_buffer = true};*/
+    this->device->SetClearArgs({0, {1.0f, 0.0f, 1.0f, 1.0f}, true, true});
     this->device->Clear();
+
+    Frame *currentFrame = this->device->SpawnFrame();
+    currentFrame->AddDCSingle({vao});
+    // Some work on the frame
+    this->device->EatFrame();
+
     this->device->Swap();
     this->device->PollEvents();
   }

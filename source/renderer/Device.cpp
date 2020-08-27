@@ -70,6 +70,32 @@ uint32_t Device<T>::CreateIbo(int *data, size_t length) {
 }
 
 template <typename T>
+uint32_t Device<T>::CreateProgram(std::string name) {
+  if (this->gl->Compatible().spirv) {
+    throw std::runtime_error("Unimplemented");
+  } else {
+    uint32_t program =
+        this->gl->CreateProgram(name + ".vert.glsl", name + ".frag.glsl");
+    return program;
+  }
+};
+
+template <typename T>
+Frame *Device<T>::SpawnFrame() {
+  delete currentFrame;
+  currentFrame = new Frame();
+  return currentFrame;
+}
+
+template <typename T>
+void Device<T>::EatFrame() {
+  for (size_t i = 0; i < currentFrame->singleDrawCalls.Count(); i++) {
+    auto drawCall = currentFrame->singleDrawCalls[i];
+    this->gl->DrawSingle(drawCall.vao);
+  }
+}
+
+template <typename T>
 void Device<T>::Swap() {
   this->gl->SwapBuffers();
 }

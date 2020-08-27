@@ -8,6 +8,7 @@
 #include "Args.h"
 #include "BackendOgl33.h"
 #include "BackendOgl46.h"
+#include "Frame.h"
 
 template <typename T>
 class Device {
@@ -15,6 +16,8 @@ class Device {
   Backend *gl;
   // Clear ARGS
   ClearArgs clear_args_;
+
+  Frame *currentFrame;
 
  public:
   Device();
@@ -29,6 +32,15 @@ class Device {
   uint32_t CreateVao(InputLayoutArgs inputLayout);
   uint32_t CreateVbo(float *data, size_t length);
   uint32_t CreateIbo(int *data, size_t length);
+  uint32_t CreateProgram(std::string name);
+  /**
+   * Erase previous frame and init new one.
+   */
+  Frame *SpawnFrame();
+  /**
+   * Consume current frame.
+   */
+  void EatFrame();
   void Swap();
 
   // Device method SET

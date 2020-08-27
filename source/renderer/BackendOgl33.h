@@ -2,8 +2,8 @@
 // Created by vincent on 12.08.20.
 //
 
-#ifndef NARA_BACKEND_H
-#define NARA_BACKEND_H
+#ifndef NARA_SOURCE_RENDERER_BACKEND0GL33_H
+#define NARA_SOURCE_RENDERER_BACKEND0GL33_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "../common/Array.h"
+#include "../common/File.h"
 #include "Args.h"
 #include "Backend.h"
 
@@ -27,11 +28,18 @@ class BackendOgl33 : public Backend {
   void ClearColor(float red, float green, float blue, float alpha) override;
   void Clear(bool color_buffer, bool depth_buffer) override;
   uint32_t CreateVao(InputLayoutArgs inputLayout) override;
+  uint32_t CreateProgram(std::string vertexShader,
+                         std::string fragmentShader) override;
+  void DrawSingle(uint32_t vao);
 
   // Device methods
   void Init() override;
   bool IsOpen() override;
   bool IsSuitable() override;
+  Features Compatible() const {
+    Features current = {false, 32};
+    return current;
+  }
   void Destroy() override;
   std::string Name() override;
   void SwapBuffers() override;
@@ -46,4 +54,4 @@ class BackendOgl33 : public Backend {
   }
 };
 
-#endif  // NARA_BACKEND_H
+#endif  // NARA_SOURCE_RENDERER_BACKEND0GL33_H

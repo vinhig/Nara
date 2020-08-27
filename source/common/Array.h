@@ -16,9 +16,9 @@
 template <typename T>
 class Array {
  private:
-  T* items;
-  unsigned int count;
-  unsigned int size;
+  T* items = nullptr;
+  unsigned int count = 0;
+  unsigned int size = 0;
 
  public:
   Array() = default;
@@ -35,12 +35,7 @@ class Array {
   /**
    * Delete the extensible array and free memory.
    */
-  ~Array() {
-    /*if (this->items != nullptr) {
-      free(this->items);
-      this->items = nullptr;
-    }*/
-  }
+  ~Array() = default;
   /**
    * Add a new item.
    * Reallocate memory if this->size < this.count + 1.

@@ -56,6 +56,41 @@ uint32_t BackendOgl33::CreateVao(InputLayoutArgs inputLayout) {
   return vao;
 }
 
+uint32_t CompileShader(std::string source, GLenum shaderType) {
+  // Compile shader
+  uint32_t shader = glCreateShader(shaderType);
+  char const *csources = source.c_str();
+  glShaderSource(shader, 1, &csources, nullptr);
+  glCompileShader(shader);
+
+  std::cout << "salut" << std::endl;
+  // Check result
+  int result = GL_FALSE;
+  int infoLength;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+  glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLength);
+  if ( infoLength > 0 ){
+		char* errorMsg = new char[infoLength+1];
+		glGetShaderInfoLog(shader, infoLength, NULL, &errorMsg[0]);
+    std::cout << "bug" << std::endl;
+		throw std::runtime_error(errorMsg);
+	}
+
+  return shader;
+}
+
+uint32_t BackendOgl33::CreateProgram(std::string vertexShaderPath,
+                                     std::string fragmentShaderPath) {
+  std::string vertexSource = File::ReadAllFile(vertexShaderPath);
+  uint32_t vertexShader = CompileShader(vertexSource, GL_VERTEX_SHADER);
+  return 0;
+}
+
+void BackendOgl33::DrawSingle(uint32_t vao) {
+  glBindVertexArray(vao);
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
 // Device methods
 
 void BackendOgl33::Init() {

@@ -23,7 +23,8 @@ class File {
 
     fseek(infile, 0L, SEEK_SET);
 
-    buffer = (char *)calloc(numbytes, sizeof(char));
+    // buffer = (char *)calloc(numbytes, sizeof(char));
+    buffer = (char *)malloc(sizeof(char) * (numbytes + 1));
 
     if (buffer == NULL) {
       throw std::runtime_error(
@@ -32,6 +33,8 @@ class File {
 
     fread(buffer, sizeof(char), numbytes, infile);
     fclose(infile);
+
+    buffer[numbytes] = '\0';
 
     std::string content(buffer);
 

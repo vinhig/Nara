@@ -17,6 +17,8 @@
  */
 struct DCSingle {
   uint32_t vao;
+  uint32_t ibo;
+  int count;
   // TODO next boring stuff
 };
 typedef struct DCSingle DCSingle;
@@ -37,6 +39,11 @@ typedef struct DCInstanced DCInstanced;
  * Frame register actions to be executed in the next frame.
  */
 class Frame {
+ private:
+  // Corresponding program to bind
+  // for single draw call
+  uint32_t programSingle;
+
  public:
   Frame();
   ~Frame();
@@ -54,6 +61,9 @@ class Frame {
    * Add job that need to be treated in a specific order.
    */
   void QueueSyncJob();
+
+  void SetProgram(uint32_t program) { this->programSingle = program; }
+  uint32_t GetProgram() { return this->programSingle; }
 
   void AddDCSingle(DCSingle singleDrawCall);
   void AddDCInstanced(DCInstanced instancedDrawCall);

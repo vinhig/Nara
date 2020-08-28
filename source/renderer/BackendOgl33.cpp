@@ -28,27 +28,30 @@ void BackendOgl33::ClearColor(float red, float green, float blue, float alpha) {
 };
 
 void BackendOgl33::Clear(bool color_buffer, bool depth_buffer) {
-  if (color_buffer && !depth_buffer) {
-    glClear(GL_COLOR_BUFFER_BIT);
-  } else if (!color_buffer && depth_buffer) {
-    glClear(GL_DEPTH_BUFFER_BIT);
-  } else if (color_buffer /*&& depth_buffer*/) {
-    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  }
+  // if (color_buffer && !depth_buffer) {
+  //   glClear(GL_COLOR_BUFFER_BIT);
+  // } else if (!color_buffer && depth_buffer) {
+  //   glClear(GL_DEPTH_BUFFER_BIT);
+  // } else if (color_buffer /*&& depth_buffer*/) {
+  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  // }
 }
 
 uint32_t BackendOgl33::CreateVao(InputLayoutArgs inputLayout) {
   uint32_t vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
-  int sum = 0;
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   for (size_t i = 0; i < inputLayout.entries.Count(); i++) {
     auto entry = inputLayout.entries[i];
+    glEnableVertexAttribArray(entry.index);
     glBindBuffer(GL_ARRAY_BUFFER, entry.buffer);
+    // void glVertexAttribPointer(GLuint index, GLint size, GLenum type,
+    //                            GLboolean normalized, GLsizei stride,
+    //                            const void *pointer);
     glVertexAttribPointer(entry.index, entry.size, (GLenum)entry.subtype,
                           entry.normalized ? GL_TRUE : GL_FALSE, entry.stride,
-                          (const void *)sum);
-    sum += entry.stride;
+                          entry.offset);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
   }
   glBindVertexArray(0);
@@ -59,37 +62,59 @@ uint32_t BackendOgl33::CreateVao(InputLayoutArgs inputLayout) {
 uint32_t CompileShader(std::string source, GLenum shaderType) {
   // Compile shader
   uint32_t shader = glCreateShader(shaderType);
-  char const *csources = source.c_str();
+  char const *csources = (source).c_str();
   glShaderSource(shader, 1, &csources, nullptr);
   glCompileShader(shader);
 
-  std::cout << "salut" << std::endl;
   // Check result
   int result = GL_FALSE;
   int infoLength;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
   glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLength);
-  if ( infoLength > 0 ){
-		char* errorMsg = new char[infoLength+1];
-		glGetShaderInfoLog(shader, infoLength, NULL, &errorMsg[0]);
-    std::cout << "bug" << std::endl;
-		throw std::runtime_error(errorMsg);
-	}
+  if (infoLength > 0) {
+    char *errorMsg = new char[infoLength + 1];
+    glGetShaderInfoLog(shader, infoLength, NULL, &errorMsg[0]);
+    std::cout << source << std::endl;
+    throw std::runtime_error(errorMsg);
+  }
 
   return shader;
 }
 
 uint32_t BackendOgl33::CreateProgram(std::string vertexShaderPath,
                                      std::string fragmentShaderPath) {
+  // Read and compile shaders
   std::string vertexSource = File::ReadAllFile(vertexShaderPath);
   uint32_t vertexShader = CompileShader(vertexSource, GL_VERTEX_SHADER);
-  return 0;
+  std::string fragmentSource = File::ReadAllFile(fragmentShaderPath);
+  uint32_t fragmentShader = CompileShader(fragmentSource, GL_FRAGMENT_SHADER);
+
+  // Create corresponding program
+  uint32_t program = glCreateProgram();
+  glAttachShader(program, vertexShader);
+  glAttachShader(program, fragmentShader);
+  glLinkProgram(program);
+
+  // Delete shaders
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
+
+  return program;
 }
 
-void BackendOgl33::DrawSingle(uint32_t vao) {
+void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, int count) {
+  if (vao <= 0 || ibo <= 0) {
+    std::runtime_error("Bad vertex array object or index buffer object.");
+  }
+  // glBindVertexArray(vao);
+  // glDrawArrays(GL_TRIANGLES, 0, 3);
+
   glBindVertexArray(vao);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
+
+void BackendOgl33::UseProgram(uint32_t program) { glUseProgram(program); }
 
 // Device methods
 
@@ -114,6 +139,9 @@ void BackendOgl33::Init() {
   if (GLEW_OK != glewInit()) {
     throw std::runtime_error("Unable to init GLEW.");
   }
+
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
 
   glEnable(GL_DEBUG_OUTPUT);
   glDebugMessageCallback(BackendOgl33::MessageCallback, nullptr);

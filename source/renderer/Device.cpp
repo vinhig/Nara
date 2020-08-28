@@ -66,7 +66,7 @@ template <typename T>
 uint32_t Device<T>::CreateIbo(int *data, size_t length) {
   auto buffer = this->gl->CreateBuffer(data, GLBType::GLElementBuffer,
                                        length * sizeof(unsigned int));
-  return 0;
+  return buffer;
 }
 
 template <typename T>
@@ -82,16 +82,17 @@ uint32_t Device<T>::CreateProgram(std::string name) {
 
 template <typename T>
 Frame *Device<T>::SpawnFrame() {
-  delete currentFrame;
+  // delete currentFrame;
   currentFrame = new Frame();
   return currentFrame;
 }
 
 template <typename T>
 void Device<T>::EatFrame() {
+  this->gl->UseProgram(this->currentFrame->GetProgram());
   for (size_t i = 0; i < currentFrame->singleDrawCalls.Count(); i++) {
-    auto drawCall = currentFrame->singleDrawCalls[i];
-    this->gl->DrawSingle(drawCall.vao);
+    auto drawCall = this->currentFrame->singleDrawCalls[i];
+    this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.count);
   }
 }
 

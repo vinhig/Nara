@@ -27,21 +27,26 @@ void Game<T>::Update() {}
 
 template <class T>
 void Game<T>::Run() {
+  uint32_t basicProgram = this->device->CreateProgram("assets/shaders/basic");
+
   float vertices[] = {
-      -1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0, 1.0f, -1.0f, 0.0f, -1.0f, -1.0f, 0.0f,
+      -1.0f, -1.0f, 0.0f, 1.0, 0.0, 0.0,  // TOP LEFT
+      1.0f,  -1.0f, 0.0f, 0.0, 1.0, 0.0,  // TOP RIGHT
+      0.0f,  1.0f,  0.0f, 0.0, 0.0, 1.0,  // BOTTOM
   };
-  int indices[] = {0, 1, 2, 2, 3, 0};
+  int indices[] = {0, 1, 2};
   uint32_t vbo = this->device->CreateVbo(vertices, _countof(vertices));
-  // uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
 
   InputLayoutArgs inputLayout = {};
-  Array<InputLayoutEntryArgs> entries(3);
-  entries.Add({0, 3, false, 0, vbo, GLCType::GLFLoat});
+  Array<InputLayoutEntryArgs> entries(1);
+  entries.Add({0, 3, false, sizeof(float) * 6, vbo, GLCType::GLFLoat, 0});
+  entries.Add({1, 3, false, sizeof(float) * 6, vbo, GLCType::GLFLoat,
+               (void *)(sizeof(float) * 3)});
   inputLayout.entries = entries;
 
   uint32_t vao = this->device->CreateVao(inputLayout);
 
-  uint32_t basicProgram = this->device->CreateProgram("assets/shaders/basic");
+  uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
 
   while (this->device->IsOpen()) {
     this->Update();
@@ -53,7 +58,8 @@ void Game<T>::Run() {
     this->device->Clear();
 
     Frame *currentFrame = this->device->SpawnFrame();
-    currentFrame->AddDCSingle({vao});
+    currentFrame->AddDCSingle({vao, ibo, _countof(indices)});
+    currentFrame->SetProgram(basicProgram);
     // Some work on the frame
     this->device->EatFrame();
 

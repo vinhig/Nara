@@ -46,6 +46,7 @@ struct InputLayoutEntryArgs {
   size_t stride;
   uint32_t buffer;
   GLCType subtype;
+  void *offset;
 };
 
 struct InputLayoutArgs {

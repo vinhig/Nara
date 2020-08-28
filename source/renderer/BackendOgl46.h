@@ -32,7 +32,8 @@ class BackendOgl46 : public Backend {
                          std::string fragmentShader) override {
     return 0;
   }
-  void DrawSingle(uint32_t vao) override{};
+  void DrawSingle(uint32_t vao, uint32_t ibo, int count) override{};
+  void UseProgram(uint32_t program) override{};
 
   // Device methods
   void Init() override;

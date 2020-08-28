@@ -28,7 +28,8 @@ class Backend {
   virtual uint32_t CreateVao(InputLayoutArgs inputLayout) = 0;
   virtual uint32_t CreateProgram(std::string vertexShader,
                                  std::string fragmentShader) = 0;
-  virtual void DrawSingle(uint32_t vao) = 0;
+  virtual void DrawSingle(uint32_t vao, uint32_t ibo, int count) = 0;
+  virtual void UseProgram(uint32_t program) = 0;
 
   // Device methods
   virtual void Init() = 0;

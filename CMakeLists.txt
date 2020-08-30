@@ -29,6 +29,10 @@ add_library(logic
     source/logic/Game.cpp source/logic/Game.h
 )
 
+add_library(loader
+    source/logic/Game.cpp source/logic/Game.h
+)
+
 add_executable(Nara
     source/main.cpp
 )

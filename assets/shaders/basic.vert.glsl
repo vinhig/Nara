@@ -2,10 +2,13 @@
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
+layout(location = 2) in vec2 uv;
 
-out vec3 mcolor;
+out vec3 o_color;
+out vec2 o_uv;
 
 void main() {
-  mcolor = color;
+  o_color = color;
+  o_uv = uv;
   gl_Position = vec4(position, 1.0);
 }

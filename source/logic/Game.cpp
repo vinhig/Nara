@@ -31,18 +31,21 @@ void Game<T>::Run() {
   uint32_t basicProgram = this->device->CreateProgram("assets/shaders/basic");
 
   float vertices[] = {
-      -1.0f, -1.0f, 0.0f, 1.0, 0.0, 0.0,  // TOP LEFT
-      1.0f,  -1.0f, 0.0f, 0.0, 1.0, 0.0,  // TOP RIGHT
-      0.0f,  1.0f,  0.0f, 0.0, 0.0, 1.0,  // BOTTOM
+      -1.0f, -1.0f, 0.0f, 1.0, 0.0, 0.0, 0.0, 0.0,  // TOP LEFT
+      1.0f,  -1.0f, 0.0f, 0.0, 1.0, 0.0, 1.0, 0.0,  // TOP RIGHT
+      0.0f,  1.0f,  0.0f, 0.0, 0.0, 1.0, 0.5, 1.0,  // BOTTOM
   };
   int indices[] = {0, 1, 2};
   uint32_t vbo = this->device->CreateVbo(vertices, _countof(vertices));
 
+  size_t vertexStride = sizeof(float) * 8;
   InputLayoutArgs inputLayout = {};
-  Array<InputLayoutEntryArgs> entries(1);
-  entries.Add({0, 3, false, sizeof(float) * 6, vbo, GLCType::GLFLoat, 0});
-  entries.Add({1, 3, false, sizeof(float) * 6, vbo, GLCType::GLFLoat,
+  Array<InputLayoutEntryArgs> entries(3);
+  entries.Add({0, 3, false, vertexStride, vbo, GLCType::GLFLoat, 0});
+  entries.Add({1, 3, false, vertexStride, vbo, GLCType::GLFLoat,
                (void *)(sizeof(float) * 3)});
+  entries.Add({2, 2, false, vertexStride, vbo, GLCType::GLFLoat,
+               (void *)(sizeof(float) * 6)});
   inputLayout.entries = entries;
 
   uint32_t vao = this->device->CreateVao(inputLayout);

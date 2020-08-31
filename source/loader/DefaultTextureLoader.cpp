@@ -12,10 +12,10 @@
 
 TextureSpec DefaultTextureLoader::Load(std::string path) {
   int width, height, nrChannels;
+  stbi_set_flip_vertically_on_load(true);
   unsigned char* data =
       stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
 
-  std::cout << nrChannels << std::endl;
   switch (nrChannels) {
     case 4:
       return {width, height, data, TextureFormat::RGBA};

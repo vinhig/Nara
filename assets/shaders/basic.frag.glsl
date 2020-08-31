@@ -1,7 +1,11 @@
 #version 330 core
 out vec3 color;
 
-in vec3 mcolor;
-uniform sampler2D ourTexture;
+in vec3 o_color;
+in vec2 o_uv;
 
-void main() { color = mcolor; }
+uniform sampler2D diffuseTexture;
+
+void main() {
+  color = texture(diffuseTexture, o_uv).xyz * o_color;
+}

@@ -46,11 +46,23 @@ struct InputLayoutEntryArgs {
   size_t stride;
   uint32_t buffer;
   GLCType subtype;
-  void *offset;
+  void* offset;
 };
 
 struct InputLayoutArgs {
   Array<InputLayoutEntryArgs> entries;
+};
+
+enum TextureFormat {
+  RGB = GL_RGB,
+  RGBA = GL_RGBA,
+};
+
+struct TextureSpec {
+  int width;
+  int height;
+  unsigned char* data;
+  TextureFormat format;
 };
 
 #endif  // NARA_SOURCE_RENDERER_ARGS_H_

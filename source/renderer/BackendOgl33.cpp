@@ -102,7 +102,25 @@ uint32_t BackendOgl33::CreateProgram(std::string vertexShaderPath,
   return program;
 }
 
-void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, int count) {
+uint32_t BackendOgl33::CreateTexture(TextureSpec textureSpec) {
+  uint32_t texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexImage2D(GL_TEXTURE_2D, 0, (GLenum)textureSpec.format, textureSpec.width,
+               textureSpec.height, 0, (GLenum)textureSpec.format,
+               GL_UNSIGNED_BYTE, textureSpec.data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  return texture;
+}
+
+void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
+                              int count) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
   }
@@ -110,9 +128,12 @@ void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, int count) {
   // glDrawArrays(GL_TRIANGLES, 0, 3);
 
   glBindVertexArray(vao);
+  glBindTexture(GL_TEXTURE_2D, texture);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
+
+void BackendOgl33::FeedTexture(unsigned char *data) {}
 
 void BackendOgl33::UseProgram(uint32_t program) { glUseProgram(program); }
 

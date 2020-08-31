@@ -30,7 +30,10 @@ class BackendOgl33 : public Backend {
   uint32_t CreateVao(InputLayoutArgs inputLayout) override;
   uint32_t CreateProgram(std::string vertexShader,
                          std::string fragmentShader) override;
-  void DrawSingle(uint32_t vao, uint32_t ibo, int count) override;
+  uint32_t CreateTexture(TextureSpec textureSpec) override;
+  void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
+                  int count) override;
+  void FeedTexture(unsigned char *data) override;
   void UseProgram(uint32_t program) override;
 
   // Device methods

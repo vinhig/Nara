@@ -5,6 +5,7 @@
 #include "Game.h"
 
 #include "../common/Macros.h"
+#include "../loader/DefaultTextureLoader.h"
 
 template <class T>
 Game<T>::Game() = default;
@@ -48,6 +49,10 @@ void Game<T>::Run() {
 
   uint32_t ibo = this->device->CreateIbo(indices, _countof(indices));
 
+  DefaultTextureLoader *loader = new DefaultTextureLoader();
+  TextureSpec textureSpec = loader->Load("assets/textures/test.png");
+  uint32_t texture = this->device->CreateTexture(textureSpec);
+
   while (this->device->IsOpen()) {
     this->Update();
     /*ClearArgs args = {.framebuffer = 0,
@@ -58,7 +63,7 @@ void Game<T>::Run() {
     this->device->Clear();
 
     Frame *currentFrame = this->device->SpawnFrame();
-    currentFrame->AddDCSingle({vao, ibo, _countof(indices)});
+    currentFrame->AddDCSingle({vao, ibo, texture, _countof(indices)});
     currentFrame->SetProgram(basicProgram);
     // Some work on the frame
     this->device->EatFrame();

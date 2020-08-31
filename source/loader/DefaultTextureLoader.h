@@ -7,12 +7,14 @@
 
 #include "TextureLoader.h"
 
-class DefaultTextureLoader : public TextureLoader {
+class DefaultTextureLoader /*: public TextureLoader*/ {
  private:
   /* data */
  public:
-  DefaultTextureLoader(/* args */);
-  ~DefaultTextureLoader();
+  DefaultTextureLoader() = default;
+  ~DefaultTextureLoader() = default;
+  TextureSpec Load(std::string path) /* override*/;
+  void Unload(TextureSpec* texture) /* override*/;
 };
 
 #endif  // NARA_SOURCE_LOADER_DEFAULTTEXTURELOADER_H_

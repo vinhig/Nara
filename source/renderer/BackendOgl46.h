@@ -32,7 +32,10 @@ class BackendOgl46 : public Backend {
                          std::string fragmentShader) override {
     return 0;
   }
-  void DrawSingle(uint32_t vao, uint32_t ibo, int count) override{};
+  uint32_t CreateTexture(TextureSpec textureSpec) override { return 0; };
+  void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
+                  int count) override{};
+  void FeedTexture(unsigned char* data) override{};
   void UseProgram(uint32_t program) override{};
 
   // Device methods

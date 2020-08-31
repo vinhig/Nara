@@ -10,10 +10,21 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
+include_directories(libraries/)
+
 add_library(common
    source/common/Array.h
    source/common/Macros.h
    source/common/File.cpp source/common/File.h
+)
+
+add_library(loader
+    source/loader/DefaultTextureLoader.cpp source/loader/DefaultTextureLoader.h
+    source/loader/GlhomeMeshLoader.cpp source/loader/GlhomeMeshLoader.h
+)
+
+add_library(logic
+    source/logic/Game.cpp source/logic/Game.h
 )
 
 add_library(renderer
@@ -25,21 +36,14 @@ add_library(renderer
     source/renderer/Frame.cpp source/renderer/Frame.h
 )
 
-add_library(logic
-    source/logic/Game.cpp source/logic/Game.h
-)
-
-add_library(loader
-    source/logic/Game.cpp source/logic/Game.h
-)
-
 add_executable(Nara
     source/main.cpp
 )
 
 target_link_libraries(Nara common)
-target_link_libraries(Nara renderer)
 target_link_libraries(Nara logic)
+target_link_libraries(Nara renderer)
+target_link_libraries(Nara loader)
 target_link_libraries(Nara glfw)
 target_link_libraries(Nara OpenGL::GL)
 target_link_libraries(Nara GLEW::GLEW)

@@ -33,6 +33,7 @@ class Device {
   uint32_t CreateVbo(float *data, size_t length);
   uint32_t CreateIbo(int *data, size_t length);
   uint32_t CreateProgram(std::string name);
+  uint32_t CreateTexture(TextureSpec textureSpec);
   /**
    * Erase previous frame and init new one.
    */

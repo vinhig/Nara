@@ -81,6 +81,11 @@ uint32_t Device<T>::CreateProgram(std::string name) {
 };
 
 template <typename T>
+uint32_t Device<T>::CreateTexture(TextureSpec textureSpec) {
+  return this->gl->CreateTexture(textureSpec);
+}
+
+template <typename T>
 Frame *Device<T>::SpawnFrame() {
   // delete currentFrame;
   currentFrame = new Frame();
@@ -92,7 +97,8 @@ void Device<T>::EatFrame() {
   this->gl->UseProgram(this->currentFrame->GetProgram());
   for (size_t i = 0; i < currentFrame->singleDrawCalls.Count(); i++) {
     auto drawCall = this->currentFrame->singleDrawCalls[i];
-    this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.count);
+    this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.texture,
+                         drawCall.count);
   }
 }
 

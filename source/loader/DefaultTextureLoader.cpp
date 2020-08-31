@@ -4,6 +4,28 @@
 
 #include "DefaultTextureLoader.h"
 
-DefaultTextureLoader::DefaultTextureLoader(/* args */) {}
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
-DefaultTextureLoader::~DefaultTextureLoader() {}
+#include <iostream>
+#include <string>
+
+TextureSpec DefaultTextureLoader::Load(std::string path) {
+  int width, height, nrChannels;
+  unsigned char* data =
+      stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+
+  std::cout << nrChannels << std::endl;
+  switch (nrChannels) {
+    case 4:
+      return {width, height, data, TextureFormat::RGBA};
+    case 3:
+      return {width, height, data, TextureFormat::RGB};
+
+    default:
+      throw std::runtime_error("Unknown image format.");
+      break;
+  }
+}
+
+void DefaultTextureLoader::Unload(TextureSpec* texture) {}

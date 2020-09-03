@@ -65,25 +65,46 @@ void Game<T>::Run() {
   //     -0.5f, 0.5f,  0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // TOP LEFT
   // };
   // int squareIndices[] = {0, 1, 3, 1, 2, 3};
+
+  // Load SPHERE
   FbxMeshLoader *meshLoader = new FbxMeshLoader();
-  MeshSpec suzanne = meshLoader->Load("assets/meshes/suzanna.fbx");
+  MeshSpec sphere = meshLoader->Load("assets/meshes/sphere.fbx");
 
-  uint32_t vbo_square =
-      this->device->CreateVbo(suzanne.vertices, suzanne.verticesCount);
-  uint32_t ibo_square =
-      this->device->CreateIbo(suzanne.indices, suzanne.indicesCount);
+  uint32_t vbo_sphere =
+      this->device->CreateVbo(sphere.vertices, sphere.verticesCount);
+  uint32_t ibo_sphere =
+      this->device->CreateIbo(sphere.indices, sphere.indicesCount);
 
-  InputLayoutArgs inputLayout_square = {};
-  Array<InputLayoutEntryArgs> entries_square(3);
-  entries_square.Add(
-      {0, 3, false, vertexStride, vbo_square, GLCType::GLFLoat, 0});
-  entries_square.Add({1, 3, false, vertexStride, vbo_square, GLCType::GLFLoat,
+  InputLayoutArgs inputLayout_sphere = {};
+  Array<InputLayoutEntryArgs> entries_sphere(3);
+  entries_sphere.Add(
+      {0, 3, false, vertexStride, vbo_sphere, GLCType::GLFLoat, 0});
+  entries_sphere.Add({1, 3, false, vertexStride, vbo_sphere, GLCType::GLFLoat,
                       (void *)(sizeof(float) * 3)});
-  entries_square.Add({2, 2, false, vertexStride, vbo_square, GLCType::GLFLoat,
+  entries_sphere.Add({2, 2, false, vertexStride, vbo_sphere, GLCType::GLFLoat,
                       (void *)(sizeof(float) * 6)});
-  inputLayout_square.entries = entries_square;
+  inputLayout_sphere.entries = entries_sphere;
 
-  uint32_t vao_square = this->device->CreateVao(inputLayout_square);
+  // Load SUZANNA
+  MeshSpec suzanna = meshLoader->Load("assets/meshes/suzanna.fbx");
+
+  uint32_t vbo_suzanna =
+      this->device->CreateVbo(suzanna.vertices, suzanna.verticesCount);
+  uint32_t ibo_suzanna =
+      this->device->CreateIbo(suzanna.indices, suzanna.indicesCount);
+
+  InputLayoutArgs inputLayout_suzanna = {};
+  Array<InputLayoutEntryArgs> entries_suzanna(3);
+  entries_suzanna.Add(
+      {0, 3, false, vertexStride, vbo_suzanna, GLCType::GLFLoat, 0});
+  entries_suzanna.Add({1, 3, false, vertexStride, vbo_suzanna, GLCType::GLFLoat,
+                      (void *)(sizeof(float) * 3)});
+  entries_suzanna.Add({2, 2, false, vertexStride, vbo_suzanna, GLCType::GLFLoat,
+                      (void *)(sizeof(float) * 6)});
+  inputLayout_suzanna.entries = entries_suzanna;
+
+  uint32_t vao_suzanna = this->device->CreateVao(inputLayout_suzanna);
+  uint32_t vao_sphere = this->device->CreateVao(inputLayout_sphere);
 
   DefaultTextureLoader *loader = new DefaultTextureLoader();
   TextureSpec textureSpecPng = loader->Load("assets/textures/test.png");
@@ -102,13 +123,13 @@ void Game<T>::Run() {
     this->device->Clear();
 
     Frame *currentFrame = this->device->SpawnFrame();
-    /*currentFrame->AddDCInstanced(
-        {{vao_square, ibo_square, texture_test_png, _countof(squareIndices)},
-         4});*/
+    currentFrame->AddDCInstanced(
+        {{vao_sphere, ibo_sphere, texture_test_png, sphere.indicesCount},
+         4});
     /*currentFrame->AddDCSingle({vao_triangle, ibo_triangle, texture_test_jpg,
                                _countof(trianglesIndices)});*/
     currentFrame->AddDCSingle(
-        {vao_square, ibo_square, texture_test_jpg, suzanne.indicesCount});
+        {vao_suzanna, ibo_suzanna, texture_test_jpg, suzanna.indicesCount});
     currentFrame->SetProgramSingle(basicProgram);
     currentFrame->SetProgramInstanced(ibasicProgram);
     // Some work on the frame

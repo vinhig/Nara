@@ -39,6 +39,7 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
 
   // Feed buffer
   int meshCount = scene->getMeshCount();
+  // TODO: uncomment last lines to allow multiple mesh
   for (int i = 0; i < meshCount; i++) {
     auto currentMesh = scene->getMesh(i);
     std::cout << currentMesh->name << std::endl;

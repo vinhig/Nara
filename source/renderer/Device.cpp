@@ -59,6 +59,7 @@ template <typename T>
 uint32_t Device<T>::CreateVbo(float *data, size_t length) {
   auto buffer = this->gl->CreateBuffer(data, GLBType::GLArrayBuffer,
                                        length * sizeof(float));
+  std::cout << "Created buffer of length: " << length << std::endl;
   return buffer;
 }
 

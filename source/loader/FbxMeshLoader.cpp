@@ -58,17 +58,35 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
     unsigned int* subIndicesBuffer =
         new unsigned int[indicesCount * sizeof(unsigned int)];
 
-    totalVerticesCount += verticesCount;
+    totalVerticesCount += verticesCount * 8;
     totalIndicesCount += indicesCount;
 
-    for (int w = 0; w < indicesCount; w++) {
-      printf("Face n°%d:\n{%d, %d, %d}\n", w, indices[w + 0], indices[w + 1],
-             indices[w + 2]);
-      subIndicesBuffer[w + 0] = (unsigned int)indices[w + 0];
-      subIndicesBuffer[w + 1] = (unsigned int)indices[w + 1];
-      subIndicesBuffer[w + 2] = (unsigned int)indices[w + 2];
+    int t = 0;
+
+    for (int w = 0; w < indicesCount; w += 3) {
+      if (indices[w + 0] < 0) {
+        subIndicesBuffer[w + 0] = (unsigned int)(indices[w + 0] * (-1) - 1);
+      } else {
+        subIndicesBuffer[w + 0] = (unsigned int)indices[w + 0];
+      }
+      if (indices[w + 1] < 0) {
+        subIndicesBuffer[w + 1] = (unsigned int)(indices[w + 1] * (-1) - 1);
+      } else {
+        subIndicesBuffer[w + 1] = (unsigned int)indices[w + 1];
+      }
+      if (indices[w + 2] < 0) {
+        subIndicesBuffer[w + 2] = (unsigned int)(indices[w + 2] * (-1) - 1);
+      } else {
+        subIndicesBuffer[w + 2] = (unsigned int)indices[w + 2];
+      }
+      if (t < 10) {
+        printf("Face n°%d:\n{%d, %d, %d}\n", w, subIndicesBuffer[w + 0],
+               subIndicesBuffer[w + 1], subIndicesBuffer[w + 2]);
+        t++;
+      }
     }
 
+    t = 0;
     // Copy vertices to subBuffer
     for (int j = 0; j < verticesCount; j++) {
       // Copy current vertex to buffer
@@ -77,7 +95,7 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
       //        (float)vertices[j].z, (float)normals[j].x, (float)normals[j].y,
       //        (float)normals[j].z, (float)uvs[j].x, (float)uvs[j].y);
 
-      subVerticesBuffer[j * stride] = (float)vertices[j].x;
+      subVerticesBuffer[j * stride + 0] = (float)vertices[j].x;
       subVerticesBuffer[j * stride + 1] = (float)vertices[j].y;
       subVerticesBuffer[j * stride + 2] = (float)vertices[j].z;
 
@@ -87,8 +105,14 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
 
       subVerticesBuffer[j * stride + 6] = (float)uvs[j].x;
       subVerticesBuffer[j * stride + 7] = (float)uvs[j].y;
-    }
 
+      if (t < 364) {
+        printf("Adding n°%d:\n {%f, %f, %f}\n", j,
+               subVerticesBuffer[j * stride], subVerticesBuffer[j * stride + 1],
+               subVerticesBuffer[j * stride + 2]);
+        t++;
+      }
+    }
     return {subVerticesBuffer, subIndicesBuffer, totalVerticesCount,
             totalIndicesCount};
     /*

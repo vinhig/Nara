@@ -65,4 +65,12 @@ struct TextureSpec {
   TextureFormat format;
 };
 
+struct MeshSpec {
+  float* vertices;
+  unsigned int* indices;
+  int verticesCount;
+  int indicesCount;
+};
+
+
 #endif  // NARA_SOURCE_RENDERER_ARGS_H_

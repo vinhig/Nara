@@ -63,7 +63,7 @@ uint32_t Device<T>::CreateVbo(float *data, size_t length) {
 }
 
 template <typename T>
-uint32_t Device<T>::CreateIbo(int *data, size_t length) {
+uint32_t Device<T>::CreateIbo(unsigned int *data, size_t length) {
   auto buffer = this->gl->CreateBuffer(data, GLBType::GLElementBuffer,
                                        length * sizeof(unsigned int));
   return buffer;
@@ -94,11 +94,19 @@ Frame *Device<T>::SpawnFrame() {
 
 template <typename T>
 void Device<T>::EatFrame() {
-  this->gl->UseProgram(this->currentFrame->GetProgram());
+  this->gl->UseProgram(this->currentFrame->GetProgramSingle());
   for (size_t i = 0; i < currentFrame->singleDrawCalls.Count(); i++) {
     auto drawCall = this->currentFrame->singleDrawCalls[i];
     this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.texture,
                          drawCall.count);
+  }
+
+  this->gl->UseProgram(this->currentFrame->GetProgramInstanced());
+  for (size_t i = 0; i < currentFrame->instancedDrawCalls.Count(); i++) {
+    auto drawCall = this->currentFrame->instancedDrawCalls[i];
+    this->gl->DrawInstanced(drawCall.target.vao, drawCall.target.ibo,
+                            drawCall.target.texture, drawCall.target.count,
+                            drawCall.primcount);
   }
 }
 

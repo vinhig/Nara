@@ -33,6 +33,8 @@ class BackendOgl33 : public Backend {
   uint32_t CreateTexture(TextureSpec textureSpec) override;
   void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
                   int count) override;
+  void DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture, int count,
+                     int primcount) override;
   void FeedTexture(unsigned char *data) override;
   void UseProgram(uint32_t program) override;
 

@@ -19,4 +19,6 @@ void Frame::AddDCSingle(DCSingle singleDrawCall) {
   this->singleDrawCalls.Add(singleDrawCall);
 }
 
-void Frame::AddDCInstanced(DCInstanced instancedDrawCall) {}
+void Frame::AddDCInstanced(DCInstanced instancedDrawCall) {
+  this->instancedDrawCalls.Add(instancedDrawCall);
+}

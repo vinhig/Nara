@@ -133,6 +133,19 @@ void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
 
+void BackendOgl33::DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture,
+                                 int count, int primcount) {
+  if (vao <= 0 || ibo <= 0) {
+    std::runtime_error("Bad vertex array object or index buffer object.");
+  }
+
+  glBindVertexArray(vao);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr,
+                          primcount);
+}
+
 void BackendOgl33::FeedTexture(unsigned char *data) {}
 
 void BackendOgl33::UseProgram(uint32_t program) { glUseProgram(program); }

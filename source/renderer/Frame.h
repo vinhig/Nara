@@ -32,7 +32,8 @@ typedef struct DCSingle DCSingle;
  */
 struct DCInstanced {
   // TODO next boring stuff
-  int dummy;
+  DCSingle target;
+  int primcount;
 };
 typedef struct DCInstanced DCInstanced;
 
@@ -44,6 +45,7 @@ class Frame {
   // Corresponding program to bind
   // for single draw call
   uint32_t programSingle;
+  uint32_t programInstanced;
 
  public:
   Frame();
@@ -63,8 +65,12 @@ class Frame {
    */
   void QueueSyncJob();
 
-  void SetProgram(uint32_t program) { this->programSingle = program; }
-  uint32_t GetProgram() { return this->programSingle; }
+  void SetProgramSingle(uint32_t program) { this->programSingle = program; }
+  void SetProgramInstanced(uint32_t program) {
+    this->programInstanced = program;
+  }
+  uint32_t GetProgramSingle() { return this->programSingle; }
+  uint32_t GetProgramInstanced() { return this->programInstanced; }
 
   void AddDCSingle(DCSingle singleDrawCall);
   void AddDCInstanced(DCInstanced instancedDrawCall);

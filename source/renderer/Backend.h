@@ -31,6 +31,8 @@ class Backend {
   virtual uint32_t CreateTexture(TextureSpec textureSpec) = 0;
   virtual void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
                           int count) = 0;
+  virtual void DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture,
+                             int count, int primcount) = 0;
   virtual void FeedTexture(unsigned char* data) = 0;
   virtual void UseProgram(uint32_t program) = 0;
 

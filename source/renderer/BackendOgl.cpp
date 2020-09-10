@@ -95,28 +95,19 @@ uint32_t BackendOgl::CreateProgram(std::string vertexShaderPath,
 
 uint32_t BackendOgl::CreateTexture(TextureSpec textureSpec) {
   uint32_t texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, (GLenum)textureSpec.format,
-  textureSpec.width,
-               textureSpec.height, 0, (GLenum)textureSpec.format,
-               GL_UNSIGNED_BYTE, textureSpec.data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, 0);
-  // glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-  // glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  // glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  // glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  // glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  // glTextureStorage2D(
-  //     texture, 1, textureSpec.format == TextureFormat::RGB ? GL_RGB8 : GL_RGBA8,
-  //     textureSpec.width, textureSpec.height);
-  // glTextureSubImage2D(texture, 0, 0, 0, textureSpec.width, textureSpec.height,
-  //                     GL_RGBA, GL_UNSIGNED_BYTE, textureSpec.data);
+  glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTextureStorage2D(
+      texture, 1, textureSpec.format == TextureFormat::RGB ? GL_RGB8 : GL_RGBA8,
+      textureSpec.width, textureSpec.height);
+
+  glTextureSubImage2D(
+      texture, 0, 0, 0, textureSpec.width, textureSpec.height,
+      textureSpec.format == TextureFormat::RGB ? GL_RGB : GL_RGBA,
+      GL_UNSIGNED_BYTE, textureSpec.data);
 
   return texture;
 }

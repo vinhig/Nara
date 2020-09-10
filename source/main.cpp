@@ -43,8 +43,8 @@ int main(int argc, char *argv[]) {
   // }
 
   // if (!gl_33 && !gl_46 || gl_33) {
-    // LaunchMin();
-    Launch<BackendOgl>();
+  // LaunchMin();
+  Launch<BackendOgl>();
   // }
 
   return 0;

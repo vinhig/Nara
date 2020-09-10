@@ -18,5 +18,6 @@ void main() {
   o_color = color;
   o_uv = uv;
   float offset = gl_InstanceID / 10.0;
-  gl_Position = /*projection * view * model[gl_InstanceID] */ vec4(position + vec3(offset, offset, 0), 1.0);
+  gl_Position = /*projection * view * model[gl_InstanceID] */ vec4(
+      position + vec3(offset, offset, 0), 1.0);
 }

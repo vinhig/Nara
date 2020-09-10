@@ -109,8 +109,8 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
 
       // if (t < 364) {
       //   printf("Adding n°%d:\n {%f, %f, %f}\n", j,
-      //          subVerticesBuffer[j * stride], subVerticesBuffer[j * stride + 1],
-      //          subVerticesBuffer[j * stride + 2]);
+      //          subVerticesBuffer[j * stride], subVerticesBuffer[j * stride +
+      //          1], subVerticesBuffer[j * stride + 2]);
       //   t++;
       // }
     }

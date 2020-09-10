@@ -141,7 +141,8 @@ void Game<T>::Run() {
   };
 
   SceneUniform struct_ubo_scene;
-  memcpy(&struct_ubo_scene.projection[0], &projection[0][0], 16 * sizeof(float));
+  memcpy(&struct_ubo_scene.projection[0], &projection[0][0],
+         16 * sizeof(float));
   memcpy(&struct_ubo_scene.view[0], &view[0][0], 16 * sizeof(float));
 
   ObjectUniform struct_ubo_object;
@@ -149,11 +150,11 @@ void Game<T>::Run() {
 
   uint32_t ubo_scene =
       this->device->CreateUbo((void *)&struct_ubo_scene, sizeof(SceneUniform));
-  
-  uint32_t ubo_object =
-      this->device->CreateUbo((void *)&struct_ubo_object, sizeof(ObjectUniform));
-  
-  Array<uint32_t>* ubos = new Array<uint32_t>();
+
+  uint32_t ubo_object = this->device->CreateUbo((void *)&struct_ubo_object,
+                                                sizeof(ObjectUniform));
+
+  Array<uint32_t> *ubos = new Array<uint32_t>();
   ubos->Add(ubo_scene);
   ubos->Add(ubo_object);
 

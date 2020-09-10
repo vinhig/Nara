@@ -13,7 +13,6 @@ class MeshLoader {
  private:
   /* data */
  public:
-
   virtual MeshSpec Load(std::string path) = 0;
 };
 

@@ -5,8 +5,8 @@
 #ifndef NARA_SOURCE_LOADER_FBXMESHLOADER_H_
 #define NARA_SOURCE_LOADER_FBXMESHLOADER_H_
 
-#include "MeshLoader.h"
 #include "../renderer/Args.h"
+#include "MeshLoader.h"
 
 class FbxMeshLoader : public MeshLoader {
  private:

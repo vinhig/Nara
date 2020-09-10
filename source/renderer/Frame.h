@@ -19,6 +19,7 @@ struct DCSingle {
   uint32_t vao;
   uint32_t ibo;
   uint32_t texture;
+  Array<uint32_t>* uniforms;
   int count;
   // TODO next boring stuff
 };

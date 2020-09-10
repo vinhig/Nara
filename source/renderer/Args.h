@@ -13,12 +13,14 @@
  * Graphics Library Content Type
  */
 enum GLCType {
-  GLFLoat = GL_FLOAT,
+  GLFloat = GL_FLOAT,
   GLInt = GL_INT,
   GLUint = GL_UNSIGNED_INT,
-  GLUshort = GL_UNSIGNED_SHORT
+  GLUshort = GL_UNSIGNED_SHORT,
+  GLMat4,
+  GLVec4,
+  GLVec3,
 };
-typedef enum GLCType GLCType;
 
 /**
  * Graphics Library Buffer Type
@@ -26,8 +28,8 @@ typedef enum GLCType GLCType;
 enum GLBType {
   GLArrayBuffer = GL_ARRAY_BUFFER,
   GLElementBuffer = GL_ELEMENT_ARRAY_BUFFER,
+  GLUniformBuffer = GL_UNIFORM_BUFFER,
 };
-typedef enum GLBType GLBType;
 
 struct ClearArgs {
   unsigned int framebuffer;
@@ -37,7 +39,7 @@ struct ClearArgs {
 };
 
 /**
- * Represent shader entry.
+ * Represent vertices shader entry.
  */
 struct InputLayoutEntryArgs {
   unsigned int index;
@@ -71,6 +73,5 @@ struct MeshSpec {
   int verticesCount;
   int indicesCount;
 };
-
 
 #endif  // NARA_SOURCE_RENDERER_ARGS_H_

@@ -16,6 +16,9 @@
 #include "BackendOgl33.h"
 
 class BackendOgl46 : public Backend {
+ private:
+  int width, height;
+
  public:
   bool suitable_ = false;
   GLFWwindow* window{};
@@ -34,13 +37,14 @@ class BackendOgl46 : public Backend {
   }
   uint32_t CreateTexture(TextureSpec textureSpec) override { return 0; };
   void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
-                  int count) override{};
+                  Array<uint32_t>* uniforms, int count) override {};
   void DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture, int count,
                      int primcount) override{};
   void FeedTexture(unsigned char* data) override{};
   void UseProgram(uint32_t program) override{};
 
   // Device methods
+  int Height() override { return this->height; };
   void Init() override;
   bool IsOpen() override;
   bool IsSuitable() override;
@@ -51,6 +55,7 @@ class BackendOgl46 : public Backend {
   void Destroy() override;
   std::string Name() override;
   void SwapBuffers() override;
+  int Width() override { return this->width; };
 };
 
 #endif  // NARA_SOURCE_RENDERER_BACKEND0GL46_H

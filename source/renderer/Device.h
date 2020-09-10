@@ -26,12 +26,15 @@ class Device {
   bool IsOpen();
   bool IsSuitable();
   void PollEvents();
+  int Width() { return this->gl->Width(); };
+  int Height() { return this->gl->Height(); };
 
   // Device method ACT
   void Clear();
+  uint32_t CreateIbo(unsigned int *data, size_t length);
+  uint32_t CreateUbo(void *data, size_t size);
   uint32_t CreateVao(InputLayoutArgs inputLayout);
   uint32_t CreateVbo(float *data, size_t length);
-  uint32_t CreateIbo(unsigned int *data, size_t length);
   uint32_t CreateProgram(std::string name);
   uint32_t CreateTexture(TextureSpec textureSpec);
   /**

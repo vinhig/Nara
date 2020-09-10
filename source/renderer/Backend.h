@@ -30,13 +30,14 @@ class Backend {
                                  std::string fragmentShader) = 0;
   virtual uint32_t CreateTexture(TextureSpec textureSpec) = 0;
   virtual void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
-                          int count) = 0;
+                          Array<uint32_t>* uniforms, int count) = 0;
   virtual void DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture,
                              int count, int primcount) = 0;
   virtual void FeedTexture(unsigned char* data) = 0;
   virtual void UseProgram(uint32_t program) = 0;
 
   // Device methods
+  virtual int Height() = 0;
   virtual void Init() = 0;
   virtual bool IsOpen() = 0;
   virtual bool IsSuitable() = 0;
@@ -44,6 +45,7 @@ class Backend {
   virtual void Destroy() = 0;
   virtual std::string Name() = 0;
   virtual void SwapBuffers() = 0;
+  virtual int Width() = 0;
 };
 
 #endif  // NARA_SOURCE_RENDERER_BACKEND_H_

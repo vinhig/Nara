@@ -61,6 +61,15 @@ class Array {
     this->size = 0;
   }
   /**
+   * Return adress to i-th item.
+   */
+  T& Get(int i) {
+    if (i >= count) {
+      throw std::runtime_error("Index out of bounds.");
+    }
+    return items[i];
+  }
+  /**
    * Return the last item.
    * Reallocate memory if this->size < this.count + 1.
    */

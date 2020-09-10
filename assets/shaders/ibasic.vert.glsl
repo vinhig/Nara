@@ -7,9 +7,16 @@ layout(location = 2) in vec2 uv;
 out vec3 o_color;
 out vec2 o_uv;
 
+/*layout(std140) uniform Matrices {
+  mat4 projection;
+  mat4 view;
+};
+
+uniform mat4 model[];*/
+
 void main() {
   o_color = color;
   o_uv = uv;
   float offset = gl_InstanceID / 10.0;
-  gl_Position = vec4(position + vec3(offset, offset, 0), 1.0);
+  gl_Position = /*projection * view * model[gl_InstanceID] */ vec4(position + vec3(offset, offset, 0), 1.0);
 }

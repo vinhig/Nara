@@ -51,6 +51,19 @@ void Device<T>::SetClearArgs(struct ClearArgs args) {
 }
 
 template <typename T>
+uint32_t Device<T>::CreateIbo(unsigned int *data, size_t length) {
+  auto buffer = this->gl->CreateBuffer(data, GLBType::GLElementBuffer,
+                                       length * sizeof(unsigned int));
+  return buffer;
+}
+
+template <typename T>
+uint32_t Device<T>::CreateUbo(void *data, size_t size) {
+  auto buffer = this->gl->CreateBuffer(data, GLBType::GLUniformBuffer, size);
+  return buffer;
+}
+
+template <typename T>
 uint32_t Device<T>::CreateVao(InputLayoutArgs inputLayout) {
   return this->gl->CreateVao(inputLayout);
 }
@@ -60,13 +73,6 @@ uint32_t Device<T>::CreateVbo(float *data, size_t length) {
   auto buffer = this->gl->CreateBuffer(data, GLBType::GLArrayBuffer,
                                        length * sizeof(float));
   std::cout << "Created buffer of length: " << length << std::endl;
-  return buffer;
-}
-
-template <typename T>
-uint32_t Device<T>::CreateIbo(unsigned int *data, size_t length) {
-  auto buffer = this->gl->CreateBuffer(data, GLBType::GLElementBuffer,
-                                       length * sizeof(unsigned int));
   return buffer;
 }
 
@@ -96,10 +102,11 @@ Frame *Device<T>::SpawnFrame() {
 template <typename T>
 void Device<T>::EatFrame() {
   this->gl->UseProgram(this->currentFrame->GetProgramSingle());
+  uint32_t previousUniformBuffer = 0;
   for (size_t i = 0; i < currentFrame->singleDrawCalls.Count(); i++) {
     auto drawCall = this->currentFrame->singleDrawCalls[i];
     this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.texture,
-                         drawCall.count);
+                         drawCall.uniforms, drawCall.count);
   }
 
   this->gl->UseProgram(this->currentFrame->GetProgramInstanced());

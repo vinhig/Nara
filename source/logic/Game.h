@@ -10,6 +10,9 @@
 
 template <class T>
 class Game {
+ private:
+  int width, height;
+
  public:
   Game();
   ~Game();

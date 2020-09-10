@@ -4,6 +4,12 @@
 
 #include "Game.h"
 
+#include <string.h>
+
+#include <glm/common.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+
 #include "../common/Macros.h"
 #include "../loader/DefaultTextureLoader.h"
 #include "../loader/FbxMeshLoader.h"
@@ -18,6 +24,8 @@ template <class T>
 int Game<T>::SetDevice(Device<T> *p_device) {
   if (p_device && p_device->IsSuitable()) {
     this->device = p_device;
+    this->width = this->device->Width();
+    this->height = this->device->Height();
     return 0;
   } else {
     return 1;
@@ -66,6 +74,7 @@ void Game<T>::Run() {
   // };
   // int squareIndices[] = {0, 1, 3, 1, 2, 3};
 
+  /* Some MESH stuff */
   // Load SPHERE
   FbxMeshLoader *meshLoader = new FbxMeshLoader();
   MeshSpec sphere = meshLoader->Load("assets/meshes/sphere.fbx");
@@ -78,10 +87,10 @@ void Game<T>::Run() {
   InputLayoutArgs inputLayout_sphere = {};
   Array<InputLayoutEntryArgs> entries_sphere(3);
   entries_sphere.Add(
-      {0, 3, false, vertexStride, vbo_sphere, GLCType::GLFLoat, 0});
-  entries_sphere.Add({1, 3, false, vertexStride, vbo_sphere, GLCType::GLFLoat,
+      {0, 3, false, vertexStride, vbo_sphere, GLCType::GLFloat, 0});
+  entries_sphere.Add({1, 3, false, vertexStride, vbo_sphere, GLCType::GLFloat,
                       (void *)(sizeof(float) * 3)});
-  entries_sphere.Add({2, 2, false, vertexStride, vbo_sphere, GLCType::GLFLoat,
+  entries_sphere.Add({2, 2, false, vertexStride, vbo_sphere, GLCType::GLFloat,
                       (void *)(sizeof(float) * 6)});
   inputLayout_sphere.entries = entries_sphere;
 
@@ -96,11 +105,11 @@ void Game<T>::Run() {
   InputLayoutArgs inputLayout_suzanna = {};
   Array<InputLayoutEntryArgs> entries_suzanna(3);
   entries_suzanna.Add(
-      {0, 3, false, vertexStride, vbo_suzanna, GLCType::GLFLoat, 0});
-  entries_suzanna.Add({1, 3, false, vertexStride, vbo_suzanna, GLCType::GLFLoat,
-                      (void *)(sizeof(float) * 3)});
-  entries_suzanna.Add({2, 2, false, vertexStride, vbo_suzanna, GLCType::GLFLoat,
-                      (void *)(sizeof(float) * 6)});
+      {0, 3, false, vertexStride, vbo_suzanna, GLCType::GLFloat, 0});
+  entries_suzanna.Add({1, 3, false, vertexStride, vbo_suzanna, GLCType::GLFloat,
+                       (void *)(sizeof(float) * 3)});
+  entries_suzanna.Add({2, 2, false, vertexStride, vbo_suzanna, GLCType::GLFloat,
+                       (void *)(sizeof(float) * 6)});
   inputLayout_suzanna.entries = entries_suzanna;
 
   uint32_t vao_suzanna = this->device->CreateVao(inputLayout_suzanna);
@@ -113,6 +122,41 @@ void Game<T>::Run() {
   uint32_t texture_test_png = this->device->CreateTexture(textureSpecPng);
   uint32_t texture_test_jpg = this->device->CreateTexture(textureSpecJpg);
 
+  /* Some MATRICES stuff */
+  glm::mat4 model = glm::mat4(1.0f);
+  glm::mat4 view =
+      glm::lookAt(glm::vec3(-2.0f, -2.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+                  glm::vec3(0.0f, 1.0f, 0.0f));
+  glm::mat4 projection =
+      glm::perspective((float)glm::radians(60.0),
+                       (float)this->width / (float)this->height, 0.1f, 100.0f);
+
+  struct SceneUniform {
+    float projection[16];
+    float view[16];
+  };
+
+  struct ObjectUniform {
+    float model[16];
+  };
+
+  SceneUniform struct_ubo_scene;
+  memcpy(&struct_ubo_scene.projection[0], &projection[0][0], 16 * sizeof(float));
+  memcpy(&struct_ubo_scene.view[0], &view[0][0], 16 * sizeof(float));
+
+  ObjectUniform struct_ubo_object;
+  memcpy(&struct_ubo_object.model[0], &model[0][0], 16 * sizeof(float));
+
+  uint32_t ubo_scene =
+      this->device->CreateUbo((void *)&struct_ubo_scene, sizeof(SceneUniform));
+  
+  uint32_t ubo_object =
+      this->device->CreateUbo((void *)&struct_ubo_object, sizeof(ObjectUniform));
+  
+  Array<uint32_t>* ubos = new Array<uint32_t>();
+  ubos->Add(ubo_scene);
+  ubos->Add(ubo_object);
+
   while (this->device->IsOpen()) {
     this->Update();
     /*ClearArgs args = {.framebuffer = 0,
@@ -123,13 +167,12 @@ void Game<T>::Run() {
     this->device->Clear();
 
     Frame *currentFrame = this->device->SpawnFrame();
-    currentFrame->AddDCInstanced(
-        {{vao_sphere, ibo_sphere, texture_test_png, sphere.indicesCount},
-         4});
+    /*currentFrame->AddDCInstanced(
+        {{vao_sphere, ibo_sphere, texture_test_png, sphere.indicesCount}, 4});*/
     /*currentFrame->AddDCSingle({vao_triangle, ibo_triangle, texture_test_jpg,
                                _countof(trianglesIndices)});*/
-    currentFrame->AddDCSingle(
-        {vao_suzanna, ibo_suzanna, texture_test_jpg, suzanna.indicesCount});
+    currentFrame->AddDCSingle({vao_suzanna, ibo_suzanna, texture_test_png, ubos,
+                               suzanna.indicesCount});
     currentFrame->SetProgramSingle(basicProgram);
     currentFrame->SetProgramInstanced(ibasicProgram);
     // Some work on the frame

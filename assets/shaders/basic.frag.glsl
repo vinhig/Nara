@@ -6,4 +6,4 @@ in vec2 o_uv;
 
 uniform sampler2D diffuseTexture;
 
-void main() { color = texture(diffuseTexture, o_uv).xyz * o_color; }
+void main() { color = texture(diffuseTexture, o_uv).xyz /* o_color*/; }

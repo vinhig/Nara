@@ -80,11 +80,11 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
       } else {
         subIndicesBuffer[w + 2] = (unsigned int)indices[w + 2];
       }
-      if (t < 10) {
-        printf("Face n°%d:\n{%d, %d, %d}\n", w, subIndicesBuffer[w + 0],
-               subIndicesBuffer[w + 1], subIndicesBuffer[w + 2]);
-        t++;
-      }
+      // if (t < 10) {
+      //   printf("Face n°%d:\n{%d, %d, %d}\n", w, subIndicesBuffer[w + 0],
+      //          subIndicesBuffer[w + 1], subIndicesBuffer[w + 2]);
+      //   t++;
+      // }
     }
 
     t = 0;
@@ -107,12 +107,12 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
       subVerticesBuffer[j * stride + 6] = (float)uvs[j].x;
       subVerticesBuffer[j * stride + 7] = (float)uvs[j].y;
 
-      if (t < 364) {
-        printf("Adding n°%d:\n {%f, %f, %f}\n", j,
-               subVerticesBuffer[j * stride], subVerticesBuffer[j * stride + 1],
-               subVerticesBuffer[j * stride + 2]);
-        t++;
-      }
+      // if (t < 364) {
+      //   printf("Adding n°%d:\n {%f, %f, %f}\n", j,
+      //          subVerticesBuffer[j * stride], subVerticesBuffer[j * stride + 1],
+      //          subVerticesBuffer[j * stride + 2]);
+      //   t++;
+      // }
     }
     return {subVerticesBuffer, subIndicesBuffer, totalVerticesCount,
             totalIndicesCount};

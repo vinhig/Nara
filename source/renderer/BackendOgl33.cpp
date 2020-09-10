@@ -120,16 +120,30 @@ uint32_t BackendOgl33::CreateTexture(TextureSpec textureSpec) {
 }
 
 void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
-                              int count) {
+                              Array<uint32_t>* uniforms, int count) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
   }
   // glBindVertexArray(vao);
   // glDrawArrays(GL_TRIANGLES, 0, 3);
 
-  glBindVertexArray(vao);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  if (previousVao != vao) {
+    previousVao = vao;
+    glBindVertexArray(vao);
+  }
+  if (previousTexture != texture) {
+    previousTexture = texture;
+    glBindTexture(GL_TEXTURE_2D, texture);
+  }
+  if (previousIbo != ibo) {
+    previousIbo = ibo;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  }
+  for (int i = 0; i < uniforms->Count(); i++) 
+  {
+    glBindBufferBase(GL_UNIFORM_BUFFER, i, uniforms->Get(i));
+  }
+  
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
 
@@ -162,6 +176,8 @@ void BackendOgl33::Init() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
   this->window = glfwCreateWindow(1024, 768, "Nara Opengl 3.3", NULL, NULL);
+  this->width = 1024;
+  this->height = 768;
   if (!this->window) {
     // throw std::runtime_error("Unable to create a window.");
     // Don't interrupt

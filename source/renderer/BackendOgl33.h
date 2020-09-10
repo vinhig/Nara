@@ -16,6 +16,14 @@
 #include "Backend.h"
 
 class BackendOgl33 : public Backend {
+ private:
+  int width, height;
+
+  uint32_t previousIbo = 0;
+  uint32_t previousTexture = 0;
+  uint32_t previousUniform = 0;
+  uint32_t previousVao = 0;
+
  public:
   bool suitable = false;
   GLFWwindow *window{};
@@ -32,13 +40,14 @@ class BackendOgl33 : public Backend {
                          std::string fragmentShader) override;
   uint32_t CreateTexture(TextureSpec textureSpec) override;
   void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
-                  int count) override;
+                  Array<uint32_t>* uniforms, int count) override;
   void DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture, int count,
                      int primcount) override;
   void FeedTexture(unsigned char *data) override;
   void UseProgram(uint32_t program) override;
 
   // Device methods
+  int Height() override { return this->height; };
   void Init() override;
   bool IsOpen() override;
   bool IsSuitable() override;
@@ -57,7 +66,11 @@ class BackendOgl33 : public Backend {
             "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
             (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type,
             severity, message);
+    if (type == GL_DEBUG_TYPE_ERROR) {
+      throw std::runtime_error("An OpenGL occured. See logs above.");
+    }
   }
+  int Width() override { return this->width; };
 };
 
 #endif  // NARA_SOURCE_RENDERER_BACKEND0GL33_H

@@ -5,7 +5,7 @@
 #ifndef NARA_SOURCE_LOGIC_GAME_H_
 #define NARA_SOURCE_LOGIC_GAME_H_
 
-#include "../renderer/BackendOgl33.h"
+#include "../renderer/BackendOgl.h"
 #include "../renderer/Device.h"
 
 template <class T>
@@ -22,7 +22,6 @@ class Game {
   void Run();
 };
 
-template class Game<BackendOgl33>;
-template class Game<BackendOgl46>;
+template class Game<BackendOgl>;
 
 #endif  // NARA_SOURCE_LOGIC_GAME_H_

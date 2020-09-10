@@ -36,8 +36,7 @@ add_library(openfbx
 add_library(renderer
     source/renderer/Args.h
     source/renderer/Backend.cpp source/renderer/Backend.h
-    source/renderer/BackendOgl33.cpp source/renderer/BackendOgl33.h
-    source/renderer/BackendOgl46.cpp source/renderer/BackendOgl46.h
+    source/renderer/BackendOgl.cpp source/renderer/BackendOgl.h
     source/renderer/Device.cpp source/renderer/Device.h
     source/renderer/Frame.cpp source/renderer/Frame.h
 )

@@ -23,29 +23,29 @@ void Launch() {
 
 int main(int argc, char *argv[]) {
   // Check for optional argument
-  bool gl_33 = false;
-  bool gl_46 = false;
-  if (argc != 1) {
-    if (std::string(argv[1]) == "-gl33") {
-      gl_33 = true;
-    } else if (std::string(argv[1]) == "-gl46") {
-      gl_46 = true;
-    } else {
-      std::cout << "Unknown argument: " << argv[1] << std::endl;
-    }
-  } else {
-    gl_33 = true;
-  }
+  // bool gl_33 = false;
+  // bool gl_46 = false;
+  // if (argc != 1) {
+  //   if (std::string(argv[1]) == "-gl33") {
+  //     gl_33 = true;
+  //   } else if (std::string(argv[1]) == "-gl46") {
+  //     gl_46 = true;
+  //   } else {
+  //     std::cout << "Unknown argument: " << argv[1] << std::endl;
+  //   }
+  // } else {
+  //   gl_33 = true;
+  // }
 
-  if (!gl_33 && !gl_46 || gl_46) {
-    // LaunchMax();
-    Launch<BackendOgl46>();
-  }
+  // if (!gl_33 && !gl_46 || gl_46) {
+  //   // LaunchMax();
+  //   Launch<BackendOgl46>();
+  // }
 
-  if (!gl_33 && !gl_46 || gl_33) {
+  // if (!gl_33 && !gl_46 || gl_33) {
     // LaunchMin();
-    Launch<BackendOgl33>();
-  }
+    Launch<BackendOgl>();
+  // }
 
   return 0;
 }

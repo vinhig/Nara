@@ -2,42 +2,33 @@
 // Created by vincent on 12.08.20.
 //
 
-#include "BackendOgl33.h"
+#include "BackendOgl.h"
 
 // Constructor
 
-BackendOgl33::BackendOgl33() = default;
+BackendOgl::BackendOgl() = default;
 
-BackendOgl33::~BackendOgl33() = default;
+BackendOgl::~BackendOgl() = default;
 
 // API methods
 
-unsigned int BackendOgl33::CreateBuffer(void *data, GLBType bufferType,
-                                        size_t size) {
+uint32_t BackendOgl::CreateBuffer(void *data, size_t size) {
   uint32_t buffer;
-  glGenBuffers(1, &buffer);
-  glBindBuffer((GLenum)bufferType, buffer);
-  glBufferData((GLenum)bufferType, size, data, GL_STATIC_DRAW);
-  glBindBuffer((GLenum)bufferType, 0);
+  glCreateBuffers(1, &buffer);
+  glNamedBufferStorage(buffer, size, data, GL_DYNAMIC_STORAGE_BIT);
 
   return buffer;
 }
 
-void BackendOgl33::ClearColor(float red, float green, float blue, float alpha) {
+void BackendOgl::ClearColor(float red, float green, float blue, float alpha) {
   glClearColor(red, green, blue, alpha);
 };
 
-void BackendOgl33::Clear(bool color_buffer, bool depth_buffer) {
-  // if (color_buffer && !depth_buffer) {
-  //   glClear(GL_COLOR_BUFFER_BIT);
-  // } else if (!color_buffer && depth_buffer) {
-  //   glClear(GL_DEPTH_BUFFER_BIT);
-  // } else if (color_buffer /*&& depth_buffer*/) {
+void BackendOgl::Clear(bool color_buffer, bool depth_buffer) {
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-  // }
 }
 
-uint32_t BackendOgl33::CreateVao(InputLayoutArgs inputLayout) {
+uint32_t BackendOgl::CreateVao(InputLayoutArgs inputLayout) {
   uint32_t vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
@@ -81,8 +72,8 @@ uint32_t CompileShader(std::string source, GLenum shaderType) {
   return shader;
 }
 
-uint32_t BackendOgl33::CreateProgram(std::string vertexShaderPath,
-                                     std::string fragmentShaderPath) {
+uint32_t BackendOgl::CreateProgram(std::string vertexShaderPath,
+                                   std::string fragmentShaderPath) {
   // Read and compile shaders
   std::string vertexSource = File::ReadAllFile(vertexShaderPath);
   uint32_t vertexShader = CompileShader(vertexSource, GL_VERTEX_SHADER);
@@ -102,7 +93,7 @@ uint32_t BackendOgl33::CreateProgram(std::string vertexShaderPath,
   return program;
 }
 
-uint32_t BackendOgl33::CreateTexture(TextureSpec textureSpec) {
+uint32_t BackendOgl::CreateTexture(TextureSpec textureSpec) {
   uint32_t texture;
   glGenTextures(1, &texture);
   glBindTexture(GL_TEXTURE_2D, texture);
@@ -110,17 +101,28 @@ uint32_t BackendOgl33::CreateTexture(TextureSpec textureSpec) {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexImage2D(GL_TEXTURE_2D, 0, (GLenum)textureSpec.format, textureSpec.width,
+  glTexImage2D(GL_TEXTURE_2D, 0, (GLenum)textureSpec.format,
+  textureSpec.width,
                textureSpec.height, 0, (GLenum)textureSpec.format,
                GL_UNSIGNED_BYTE, textureSpec.data);
   glGenerateMipmap(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, 0);
+  // glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+  // glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  // glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  // glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  // glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  // glTextureStorage2D(
+  //     texture, 1, textureSpec.format == TextureFormat::RGB ? GL_RGB8 : GL_RGBA8,
+  //     textureSpec.width, textureSpec.height);
+  // glTextureSubImage2D(texture, 0, 0, 0, textureSpec.width, textureSpec.height,
+  //                     GL_RGBA, GL_UNSIGNED_BYTE, textureSpec.data);
 
   return texture;
 }
 
-void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
-                              Array<uint32_t>* uniforms, int count) {
+void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
+                            Array<uint32_t> *uniforms, int count) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
   }
@@ -139,16 +141,15 @@ void BackendOgl33::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
     previousIbo = ibo;
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   }
-  for (int i = 0; i < uniforms->Count(); i++) 
-  {
+  for (int i = 0; i < uniforms->Count(); i++) {
     glBindBufferBase(GL_UNIFORM_BUFFER, i, uniforms->Get(i));
   }
-  
+
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
 
-void BackendOgl33::DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture,
-                                 int count, int primcount) {
+void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture,
+                               int count, int primcount) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
   }
@@ -160,22 +161,22 @@ void BackendOgl33::DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture,
                           primcount);
 }
 
-void BackendOgl33::FeedTexture(unsigned char *data) {}
+void BackendOgl::FeedTexture(unsigned char *data) {}
 
-void BackendOgl33::UseProgram(uint32_t program) { glUseProgram(program); }
+void BackendOgl::UseProgram(uint32_t program) { glUseProgram(program); }
 
 // Device methods
 
-void BackendOgl33::Init() {
+void BackendOgl::Init() {
   std::cout << "Hello 33" << std::endl;
   if (!glfwInit()) {
     throw std::runtime_error("Unable to init GLFW.");
   }
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
-  this->window = glfwCreateWindow(1024, 768, "Nara Opengl 3.3", NULL, NULL);
+  this->window = glfwCreateWindow(1024, 768, "Nara Opengl 4.6", NULL, NULL);
   this->width = 1024;
   this->height = 768;
   if (!this->window) {
@@ -194,20 +195,20 @@ void BackendOgl33::Init() {
   glDepthFunc(GL_LESS);
 
   glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(BackendOgl33::MessageCallback, nullptr);
+  glDebugMessageCallback(BackendOgl::MessageCallback, nullptr);
 
   this->suitable = true;
 };
 
-bool BackendOgl33::IsOpen() { return !glfwWindowShouldClose(window); }
+bool BackendOgl::IsOpen() { return !glfwWindowShouldClose(window); }
 
-bool BackendOgl33::IsSuitable() { return this->suitable; };
+bool BackendOgl::IsSuitable() { return this->suitable; };
 
-void BackendOgl33::Destroy() {
+void BackendOgl::Destroy() {
   glfwDestroyWindow(this->window);
   glfwTerminate();
 }
 
-std::string BackendOgl33::Name() { return "OpenGL 3.3"; }
+std::string BackendOgl::Name() { return "OpenGL 3.3"; }
 
-void BackendOgl33::SwapBuffers() { glfwSwapBuffers(this->window); }
+void BackendOgl::SwapBuffers() { glfwSwapBuffers(this->window); }

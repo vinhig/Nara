@@ -15,7 +15,7 @@
 #include "Args.h"
 #include "Backend.h"
 
-class BackendOgl33 : public Backend {
+class BackendOgl : public Backend {
  private:
   int width, height;
 
@@ -27,12 +27,11 @@ class BackendOgl33 : public Backend {
  public:
   bool suitable = false;
   GLFWwindow *window{};
-  BackendOgl33();
-  ~BackendOgl33();
+  BackendOgl();
+  ~BackendOgl();
 
   // API methods
-  unsigned int CreateBuffer(void *data, GLBType bufferType,
-                            size_t size) override;
+  uint32_t CreateBuffer(void *data, size_t size) override;
   void ClearColor(float red, float green, float blue, float alpha) override;
   void Clear(bool color_buffer, bool depth_buffer) override;
   uint32_t CreateVao(InputLayoutArgs inputLayout) override;
@@ -40,7 +39,7 @@ class BackendOgl33 : public Backend {
                          std::string fragmentShader) override;
   uint32_t CreateTexture(TextureSpec textureSpec) override;
   void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
-                  Array<uint32_t>* uniforms, int count) override;
+                  Array<uint32_t> *uniforms, int count) override;
   void DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture, int count,
                      int primcount) override;
   void FeedTexture(unsigned char *data) override;

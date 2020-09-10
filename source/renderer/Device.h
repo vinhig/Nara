@@ -6,8 +6,7 @@
 #define NARA_DEVICE_H
 
 #include "Args.h"
-#include "BackendOgl33.h"
-#include "BackendOgl46.h"
+#include "BackendOgl.h"
 #include "Frame.h"
 
 template <typename T>
@@ -51,7 +50,6 @@ class Device {
   void SetClearArgs(struct ClearArgs args);
 };
 
-template class Device<BackendOgl33>;
-template class Device<BackendOgl46>;
+template class Device<BackendOgl>;
 
 #endif  // NARA_DEVICE_H

@@ -23,8 +23,7 @@ class Backend {
   // API methods
   virtual void ClearColor(float red, float green, float blue, float alpha) = 0;
   virtual void Clear(bool color_buffer, bool depth_buffer) = 0;
-  virtual unsigned int CreateBuffer(void* data, GLBType bufferType,
-                                    size_t size) = 0;
+  virtual unsigned int CreateBuffer(void* data, size_t size) = 0;
   virtual uint32_t CreateVao(InputLayoutArgs inputLayout) = 0;
   virtual uint32_t CreateProgram(std::string vertexShader,
                                  std::string fragmentShader) = 0;

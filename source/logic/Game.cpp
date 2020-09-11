@@ -125,7 +125,7 @@ void Game<T>::Run() {
   /* Some MATRICES stuff */
   glm::mat4 model = glm::mat4(1.0f);
   glm::mat4 view =
-      glm::lookAt(glm::vec3(-2.0f, -2.0f, -2.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::lookAt(glm::vec3(-4.0f, -4.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                   glm::vec3(0.0f, 1.0f, 0.0f));
   glm::mat4 projection =
       glm::perspective((float)glm::radians(60.0),
@@ -154,9 +154,13 @@ void Game<T>::Run() {
   uint32_t ubo_object = this->device->CreateUbo((void *)&struct_ubo_object,
                                                 sizeof(ObjectUniform));
 
-  Array<uint32_t> *ubos = new Array<uint32_t>();
+  Array<uint32_t> *ubos = new Array<uint32_t>(2);
   ubos->Add(ubo_scene);
   ubos->Add(ubo_object);
+
+  Array<uint32_t> *textures = new Array<uint32_t>(2);
+  textures->Add(texture_test_png);
+  textures->Add(texture_test_jpg);
 
   while (this->device->IsOpen()) {
     this->Update();
@@ -168,12 +172,12 @@ void Game<T>::Run() {
     this->device->Clear();
 
     Frame *currentFrame = this->device->SpawnFrame();
-    /*currentFrame->AddDCInstanced(
-        {{vao_sphere, ibo_sphere, texture_test_png, sphere.indicesCount}, 4});*/
+    currentFrame->AddDCInstanced(
+        {{vao_sphere, ibo_sphere, textures, ubos, sphere.indicesCount}, 4});
     /*currentFrame->AddDCSingle({vao_triangle, ibo_triangle, texture_test_jpg,
                                _countof(trianglesIndices)});*/
-    currentFrame->AddDCSingle({vao_suzanna, ibo_suzanna, texture_test_png, ubos,
-                               suzanna.indicesCount});
+    currentFrame->AddDCSingle(
+        {vao_suzanna, ibo_suzanna, textures, ubos, suzanna.indicesCount});
     currentFrame->SetProgramSingle(basicProgram);
     currentFrame->SetProgramInstanced(ibasicProgram);
     // Some work on the frame

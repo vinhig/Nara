@@ -102,7 +102,7 @@ void Device<T>::EatFrame() {
   uint32_t previousUniformBuffer = 0;
   for (size_t i = 0; i < currentFrame->singleDrawCalls.Count(); i++) {
     auto drawCall = this->currentFrame->singleDrawCalls[i];
-    this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.texture,
+    this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.textures,
                          drawCall.uniforms, drawCall.count);
   }
 
@@ -110,8 +110,8 @@ void Device<T>::EatFrame() {
   for (size_t i = 0; i < currentFrame->instancedDrawCalls.Count(); i++) {
     auto drawCall = this->currentFrame->instancedDrawCalls[i];
     this->gl->DrawInstanced(drawCall.target.vao, drawCall.target.ibo,
-                            drawCall.target.texture, drawCall.target.count,
-                            drawCall.primcount);
+                            drawCall.target.textures, drawCall.target.uniforms,
+                            drawCall.target.count, drawCall.primcount);
   }
 }
 

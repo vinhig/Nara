@@ -2,8 +2,8 @@
 // Created by vincent on 12.08.20.
 //
 
-#ifndef NARA_SOURCE_RENDERER_BACKEND0GL33_H
-#define NARA_SOURCE_RENDERER_BACKEND0GL33_H
+#ifndef NARA_SOURCE_RENDERER_BACKEND0GL_H
+#define NARA_SOURCE_RENDERER_BACKEND0GL_H
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -38,9 +38,10 @@ class BackendOgl : public Backend {
   uint32_t CreateProgram(std::string vertexShader,
                          std::string fragmentShader) override;
   uint32_t CreateTexture(TextureSpec textureSpec) override;
-  void DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
+  void DrawSingle(uint32_t vao, uint32_t ibo, Array<uint32_t> *textures,
                   Array<uint32_t> *uniforms, int count) override;
-  void DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture, int count,
+  void DrawInstanced(uint32_t vao, uint32_t ibo, Array<uint32_t> *textures,
+                     Array<uint32_t> *uniforms, int count,
                      int primcount) override;
   void FeedTexture(unsigned char *data) override;
   void UseProgram(uint32_t program) override;
@@ -72,4 +73,4 @@ class BackendOgl : public Backend {
   int Width() override { return this->width; };
 };
 
-#endif  // NARA_SOURCE_RENDERER_BACKEND0GL33_H
+#endif  // NARA_SOURCE_RENDERER_BACKEND0GL_H

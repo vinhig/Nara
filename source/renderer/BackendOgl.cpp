@@ -112,7 +112,8 @@ uint32_t BackendOgl::CreateTexture(TextureSpec textureSpec) {
   return texture;
 }
 
-void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
+void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
+                            Array<uint32_t> *textures,
                             Array<uint32_t> *uniforms, int count) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
@@ -124,9 +125,8 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
     previousVao = vao;
     glBindVertexArray(vao);
   }
-  if (previousTexture != texture) {
-    previousTexture = texture;
-    glBindTexture(GL_TEXTURE_2D, texture);
+  for (int i = 0; i < textures->Count(); i++) {
+    glBindTextureUnit(i, textures->Get(i));
   }
   if (previousIbo != ibo) {
     previousIbo = ibo;
@@ -139,15 +139,29 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo, uint32_t texture,
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 }
 
-void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo, uint32_t texture,
-                               int count, int primcount) {
+void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
+                               Array<uint32_t> *textures,
+                               Array<uint32_t> *uniforms, int count,
+                               int primcount) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
   }
 
-  glBindVertexArray(vao);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  if (previousVao != vao) {
+    previousVao = vao;
+    glBindVertexArray(vao);
+  }
+  for (int i = 0; i < textures->Count(); i++) {
+    glBindTextureUnit(i, textures->Get(i));
+  }
+  if (previousIbo != ibo) {
+    previousIbo = ibo;
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+  }
+  for (int i = 0; i < uniforms->Count(); i++) {
+    glBindBufferBase(GL_UNIFORM_BUFFER, i, uniforms->Get(i));
+  }
+
   glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr,
                           primcount);
 }

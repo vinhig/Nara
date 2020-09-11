@@ -1,6 +1,9 @@
+int testNumber = 0;
+
 #define ASSERT_THROW(condition, msg)                                      \
   {                                                                       \
     if (!(condition)) {                                                   \
+      std::cout << "-- FAILED --" << std::endl;                           \
       throw std::runtime_error(std::string(__FILE__) + std::string(":") + \
                                std::to_string(__LINE__) +                 \
                                std::string(" in ") +                      \

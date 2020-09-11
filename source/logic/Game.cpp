@@ -13,6 +13,8 @@
 #include "../common/Macros.h"
 #include "../loader/DefaultTextureLoader.h"
 #include "../loader/FbxMeshLoader.h"
+#include "../logic/CMeshInstance.h"
+#include "../logic/Ecs.h"
 
 template <class T>
 Game<T>::Game() = default;
@@ -39,7 +41,34 @@ template <class T>
 void Game<T>::Run() {
   uint32_t basicProgram = this->device->CreateProgram("assets/shaders/basic");
   uint32_t ibasicProgram = this->device->CreateProgram("assets/shaders/ibasic");
+
   size_t vertexStride = sizeof(float) * 8;
+
+  System *world = new System();
+
+  // Create a testing sphere
+  Entity *sphere = new Entity(world);
+
+  // Create a testing monkey
+  Entity *monkey = new Entity(world);
+
+  // Prepare something to load our mesh
+  FbxMeshLoader *meshLoader = new FbxMeshLoader();
+
+  // Populate our entity with a visual component
+  CMeshInstance *sphereCMesh = sphere->GetOrCreate<CMeshInstance>();
+  CMeshInstance *monkeyCMesh = monkey->GetOrCreate<CMeshInstance>();
+  sphereCMesh->path = "assets/meshes/sphere.fbx";
+  monkeyCMesh->path = "assets/meshes/suzanna.fbx";
+  sphereCMesh->loader = meshLoader;
+  monkeyCMesh->loader = meshLoader;
+
+  // Launch init step
+  world->Initialize();
+
+  // Launch loading step
+  sphereCMesh->Load<Device<T>>(this->device);
+  monkeyCMesh->Load<Device<T>>(this->device);
 
   // Our first triangle
   // float triangleVertices[] = {
@@ -76,7 +105,7 @@ void Game<T>::Run() {
 
   /* Some MESH stuff */
   // Load SPHERE
-  FbxMeshLoader *meshLoader = new FbxMeshLoader();
+  /*
   MeshSpec sphere = meshLoader->Load("assets/meshes/sphere.fbx");
 
   uint32_t vbo_sphere =
@@ -122,8 +151,11 @@ void Game<T>::Run() {
   uint32_t texture_test_png = this->device->CreateTexture(textureSpecPng);
   uint32_t texture_test_jpg = this->device->CreateTexture(textureSpecJpg);
 
+  */
+
   /* Some MATRICES stuff */
-  glm::mat4 model = glm::mat4(1.0f);
+
+  /*glm::mat4 model = glm::mat4(1.0f);
   glm::mat4 view =
       glm::lookAt(glm::vec3(-4.0f, -4.0f, -4.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                   glm::vec3(0.0f, 1.0f, 0.0f));
@@ -162,6 +194,8 @@ void Game<T>::Run() {
   textures->Add(texture_test_png);
   textures->Add(texture_test_jpg);
 
+  */
+
   while (this->device->IsOpen()) {
     this->Update();
     /*ClearArgs args = {.framebuffer = 0,
@@ -172,12 +206,12 @@ void Game<T>::Run() {
     this->device->Clear();
 
     Frame *currentFrame = this->device->SpawnFrame();
-    currentFrame->AddDCInstanced(
+    /*currentFrame->AddDCInstanced(
         {{vao_sphere, ibo_sphere, textures, ubos, sphere.indicesCount}, 4});
     /*currentFrame->AddDCSingle({vao_triangle, ibo_triangle, texture_test_jpg,
                                _countof(trianglesIndices)});*/
-    currentFrame->AddDCSingle(
-        {vao_suzanna, ibo_suzanna, textures, ubos, suzanna.indicesCount});
+    // currentFrame->AddDCSingle(
+    //     {vao_suzanna, ibo_suzanna, textures, ubos, suzanna.indicesCount});
     currentFrame->SetProgramSingle(basicProgram);
     currentFrame->SetProgramInstanced(ibasicProgram);
     // Some work on the frame

@@ -1,10 +1,10 @@
-#include "../logic/CLabel.h"
-#include "../logic/CTransform.h"
-#include "../logic/Ecs.h"
+// #include "../logic/CLabel.h"
+// #include "../logic/CTransform.h"
+// #include "../logic/Ecs.h"
 #include "TMacros.h"
 
 int main(int argc, char const *argv[]) {
-  System *system = new System;
+  /*System *system = new System;
   Entity *test = new Entity(system);
 
   CTransform *transform = test->GetOrCreate<CTransform>();
@@ -17,6 +17,7 @@ int main(int argc, char const *argv[]) {
   std::cout << "Here" << std::endl;
   std::string label1 = test->GetOrCreate<CLabel>()->Label();
 
-  // ASSERT_THROW(label1 == "coucou", "Correct reference to component.");
+  ASSERT_THROW(label1 == "coucou", "Correct reference to component.");
+  */
   return 0;
 }

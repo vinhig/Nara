@@ -17,7 +17,7 @@ class CLabel : public IComponent {
   static const uint64_t uuid = 1;
   const uint64_t UUID() override { return this->uuid; };
 
-  CLabel(IEntity* p_owner) : IComponent(p_owner){};
+  CLabel(Entity* p_entity) : IComponent(p_entity){};
   ~CLabel(){};
 
   void Initialize() override {

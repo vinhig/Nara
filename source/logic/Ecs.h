@@ -49,12 +49,12 @@ class IComponent {
   /**
    * Owner of this component
    */
-  Entity* owner = nullptr;
+  Entity* entity = nullptr;
 
   /**
    * Create a component and reference its corresponding entity.
    */
-  IComponent(Entity* p_owner) { this->owner = p_owner; };
+  IComponent(Entity* p_entity) { this->entity = p_entity; };
   ~IComponent(){};
 
   /**
@@ -64,7 +64,7 @@ class IComponent {
   virtual const uint64_t UUID() { return this->uuid; }
 
   /**
-   * Initialize this component.
+   * Initialize ("logically") this component.
    * The actual first action applied on all components.
    */
   virtual void Initialize() = 0;
@@ -83,8 +83,8 @@ class System {
   std::vector<IComponent*> components;
 
  public:
-  System(/* args */) = default;
-  ~System();
+  System(){};
+  ~System(){};
 
   /**
    * Append a new component.
@@ -99,8 +99,15 @@ class System {
    * Initialize every components.
    * Has to be called before every other action methods.
    */
-  void Initialize();
+  void Initialize() {
+    for (int i = 0; i < this->components.size(); i++) {
+      this->components[i]->Initialize();
+    }
+  }
 };
+
+#ifndef ECS_IMPLEMENTATION
+#define ECS_IMPLEMENTATION
 
 template <typename T>
 T* Entity::GetOrCreate() {
@@ -123,7 +130,7 @@ T* System::Get(Entity* parent) {
   for (int i = 0; i < this->components.size(); i++) {
     // Compare owner of the component and the actual type of the component
     // (represented by a uuid).
-    if (this->components[i]->owner == parent &&
+    if (this->components[i]->entity == parent &&
         ((T*)this->components[i])->UUID() == T::uuid) {
       return (T*)this->components[i];
     }
@@ -131,10 +138,6 @@ T* System::Get(Entity* parent) {
   return nullptr;
 };
 
-void System::Initialize() {
-  for (int i = 0; i < this->components.size(); i++) {
-    this->components[i]->Initialize();
-  }
-}
+#endif  // ECS_IMPLEMENTATION
 
 #endif  // NARA_SOURCE_LOGIC_ECS_H_

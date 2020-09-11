@@ -8,7 +8,7 @@
 #include <glm/common.hpp>
 #include <glm/glm.hpp>
 
-#include "Component.h"
+#include "Ecs.h"
 
 class CTransform : public IComponent {
  private:
@@ -19,12 +19,15 @@ class CTransform : public IComponent {
   bool updated = false;
 
  public:
-  CTransform(/* args */);
-  ~CTransform();
+  CTransform(IEntity* p_owner) : IComponent(p_owner){};
+  ~CTransform(){};
+
+  static const uint64_t uuid = 1;
+  const uint64_t UUID() override { return this->uuid; };
 
   glm::mat4 Model();
 
-  void Initialize() override {};
+  void Initialize() override{};
 
   void SetPosition(glm::vec3 position);
   void SetRotation(glm::vec3 rotation);

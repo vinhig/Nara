@@ -1,12 +1,22 @@
+#include "../logic/CLabel.h"
+#include "../logic/CTransform.h"
+#include "../logic/Ecs.h"
 #include "TMacros.h"
 
-#include "../logic/System.h"
-#include "../logic/CTransform.h"
-#include "../logic/Component.h"
-#include "../logic/Entity.h"
+int main(int argc, char const *argv[]) {
+  System *system = new System;
+  Entity *test = new Entity(system);
 
-int main(int argc, char const *argv[])
-{
-    /* code */
-    return 0;
+  CTransform *transform = test->GetOrCreate<CTransform>();
+  CLabel *label = test->GetOrCreate<CLabel>();
+
+  std::cout << "Here" << std::endl;
+  system->Initialize();
+  std::cout << "Here" << std::endl;
+  label->SetLabel("coucou");
+  std::cout << "Here" << std::endl;
+  std::string label1 = test->GetOrCreate<CLabel>()->Label();
+
+  // ASSERT_THROW(label1 == "coucou", "Correct reference to component.");
+  return 0;
 }

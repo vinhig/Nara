@@ -16,3 +16,5 @@ void CTransform::Initialize() {
   this->model = glm::mat4();
   memcpy(&this->model[0], &this->model[0][0], 16 * sizeof(float));
 }
+
+void CTransform::Update() {}

@@ -92,23 +92,22 @@ uint32_t Device<T>::CreateTexture(TextureSpec textureSpec) {
 template <typename T>
 Frame *Device<T>::SpawnFrame() {
   // delete currentFrame;
-  currentFrame = new Frame();
-  return currentFrame;
+  return new Frame();
 }
 
 template <typename T>
-void Device<T>::EatFrame() {
-  this->gl->UseProgram(this->currentFrame->GetProgramSingle());
+void Device<T>::EatFrame(Frame *frame) {
+  this->gl->UseProgram(frame->GetProgramSingle());
   uint32_t previousUniformBuffer = 0;
-  for (size_t i = 0; i < currentFrame->singleDrawCalls.Count(); i++) {
-    auto drawCall = this->currentFrame->singleDrawCalls[i];
+  for (size_t i = 0; i < frame->singleDrawCalls.Count(); i++) {
+    auto drawCall = frame->singleDrawCalls[i];
     this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.textures,
                          drawCall.uniforms, drawCall.count);
   }
 
-  this->gl->UseProgram(this->currentFrame->GetProgramInstanced());
-  for (size_t i = 0; i < currentFrame->instancedDrawCalls.Count(); i++) {
-    auto drawCall = this->currentFrame->instancedDrawCalls[i];
+  this->gl->UseProgram(frame->GetProgramInstanced());
+  for (size_t i = 0; i < frame->instancedDrawCalls.Count(); i++) {
+    auto drawCall = frame->instancedDrawCalls[i];
     this->gl->DrawInstanced(drawCall.target.vao, drawCall.target.ibo,
                             drawCall.target.textures, drawCall.target.uniforms,
                             drawCall.target.count, drawCall.primcount);

@@ -9,6 +9,7 @@
 #include <glm/common.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <thread>
 
 #include "../common/Macros.h"
 #include "../loader/DefaultTextureLoader.h"
@@ -24,6 +25,21 @@ Game<T>::~Game() = default;
 
 template <class T>
 int Game<T>::SetDevice(Device<T> *p_device) {
+  // Spawn thread 1
+  // std::thread([this]() {
+  //   while (true) {
+  //     std::cout << "Salut" << std::endl;
+  //   }
+  // });
+
+  // // Spawn thread 2
+  // std::thread([this]() {
+  //   while (true) {
+  //     std::cout << "Salut" << std::endl;
+  //   }
+  // });
+  std::cout << std::thread::hardware_concurrency() << std::endl;
+
   if (p_device && p_device->IsSuitable()) {
     this->device = p_device;
     this->width = this->device->Width();
@@ -193,7 +209,6 @@ void Game<T>::Run() {
   Array<uint32_t> *textures = new Array<uint32_t>(2);
   textures->Add(texture_test_png);
   textures->Add(texture_test_jpg);
-
   */
 
   while (this->device->IsOpen()) {
@@ -205,6 +220,16 @@ void Game<T>::Run() {
     this->device->SetClearArgs({0, {1.0f, 0.0f, 1.0f, 1.0f}, true, true});
     this->device->Clear();
 
+    // Spawn a new frame
+    // Populate it with draw calls
+    /*
+      THREAD 1
+    */
+    // delete frames[currentFrame % 2];
+    // frames[currentFrame % 2] = this->device->SpawnFrame();
+    // this->device->EatFrame(frames[currentFrame % 2]);
+    // currentFrame++;
+
     Frame *currentFrame = this->device->SpawnFrame();
     /*currentFrame->AddDCInstanced(
         {{vao_sphere, ibo_sphere, textures, ubos, sphere.indicesCount}, 4});
@@ -215,7 +240,7 @@ void Game<T>::Run() {
     currentFrame->SetProgramSingle(basicProgram);
     currentFrame->SetProgramInstanced(ibasicProgram);
     // Some work on the frame
-    this->device->EatFrame();
+    this->device->EatFrame(currentFrame);
 
     this->device->Swap();
     this->device->PollEvents();

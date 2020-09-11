@@ -13,6 +13,8 @@ class Game {
  private:
   int width, height;
 
+  uint currentFrame = 0;
+
  public:
   Game();
   ~Game();

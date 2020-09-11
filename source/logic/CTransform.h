@@ -35,14 +35,35 @@ class CTransform : public IComponent {
 
   glm::mat4 Model();
 
+  /**
+   * Logic initialization.
+   */
   void Initialize() override;
+  /**
+   * Logic update.
+   */
+  void Update() override;
 
   void SetPosition(glm::vec3 position);
   void SetRotation(glm::vec3 rotation);
   void SetScale(glm::vec3 scale);
 
+  /**
+   * Render initialization.
+   * Need access to the current device for GPU manipulation.
+   */
   template <typename D>
-  void Load(D* device) {
+  void Initialize(D* device) {
+    // Loading uniform buffer
+    device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
+  };
+
+  /**
+   * Render update.
+   * Need access to the current device for GPU manipulation.
+   */
+  template <typename D>
+  void Update(D* device) {
     // Loading uniform buffer
     device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
   };

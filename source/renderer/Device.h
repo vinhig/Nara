@@ -16,8 +16,6 @@ class Device {
   // Clear ARGS
   ClearArgs clear_args_;
 
-  Frame *currentFrame;
-
  public:
   Device();
   ~Device();
@@ -43,7 +41,7 @@ class Device {
   /**
    * Consume current frame.
    */
-  void EatFrame();
+  void EatFrame(Frame *frame);
   void Swap();
 
   // Device method SET

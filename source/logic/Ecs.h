@@ -68,6 +68,11 @@ class IComponent {
    * The actual first action applied on all components.
    */
   virtual void Initialize() = 0;
+  /**
+   * Update ("logically") this component.
+   * Action applied on all components each frame.
+   */
+  virtual void Update(){};
 };
 
 /**

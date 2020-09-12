@@ -5,6 +5,11 @@
 #ifndef NARA_SOURCE_LOGIC_GAME_H_
 #define NARA_SOURCE_LOGIC_GAME_H_
 
+#include <deque>
+#include <mutex>
+#include <thread>
+#include <vector>
+
 #include "../renderer/BackendOgl.h"
 #include "../renderer/Device.h"
 
@@ -15,6 +20,13 @@ class Game {
 
   uint currentFrame = 0;
 
+  std::vector<std::thread> workers;
+  std::deque<int> jobs;
+
+  std::recursive_mutex findAJob;
+
+  bool running;
+
  public:
   Game();
   ~Game();
@@ -22,6 +34,7 @@ class Game {
   int SetDevice(Device<T> *p_device);
   void Update();
   void Run();
+  void Work();
 };
 
 template class Game<BackendOgl>;

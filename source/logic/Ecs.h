@@ -58,7 +58,8 @@ class IComponent {
   ~IComponent(){};
 
   /**
-   * Unique identitifer
+   * Unique identitifer.
+   * Used as a reflection method (to compare types).
    */
   static const uint64_t uuid = 0;
   virtual const uint64_t UUID() { return this->uuid; }
@@ -97,6 +98,10 @@ class System {
   template <typename T>
   void Append(T component);
 
+  /**
+   * Get the component owned by 'parent' with a 'T' type.
+   * The component returned is unique.
+   */
   template <typename T>
   T* Get(Entity* parent);
 
@@ -117,12 +122,13 @@ class System {
 template <typename T>
 T* Entity::GetOrCreate() {
   // Check if there isn't any entity
-  if (!this->system->Get<T>(this)) {
+  auto component = this->system->Get<T>(this);
+  if (!component) {
     // Create it
     this->system->Append(new T(this));
+    return this->system->Get<T>(this);
   }
-  // Return it
-  return this->system->Get<T>(this);
+  return component;
 };
 
 template <typename T>

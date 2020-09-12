@@ -25,33 +25,67 @@ Game<T>::~Game() = default;
 
 template <class T>
 int Game<T>::SetDevice(Device<T> *p_device) {
-  // Spawn thread 1
-  // std::thread([this]() {
-  //   while (true) {
-  //     std::cout << "Salut" << std::endl;
-  //   }
-  // });
-
-  // // Spawn thread 2
-  // std::thread([this]() {
-  //   while (true) {
-  //     std::cout << "Salut" << std::endl;
-  //   }
-  // });
-  std::cout << std::thread::hardware_concurrency() << std::endl;
-
   if (p_device && p_device->IsSuitable()) {
     this->device = p_device;
     this->width = this->device->Width();
     this->height = this->device->Height();
+    this->running = true;
+
+    // Spawn std::thread::hardware_concurrency() - 2 threads
+    // Keep a master thread and a drawing thread
+    // TODO: make exception when there are only two or less threads.
+    std::cout << std::thread::hardware_concurrency() << std::endl;
+    // Master thread
+    workers.push_back(std::thread([this]() {
+      while (this->running) {
+        // TODO: Keep a 144 Hz tick frequency
+        this->Update();
+      };
+    }));
+
+    // Workers threads
+    for (int i = 0; i < std::thread::hardware_concurrency() - 2; i++) {
+      workers.push_back(std::thread([this]() {
+        while (this->running) {
+          this->Work();
+        }
+      }));
+    }
+
     return 0;
-  } else {
-    return 1;
+  }
+
+  return 1;
+}
+
+/**
+ * Represents a game tick.
+ * Actually feed workers with logical update jobs.
+ */
+template <class T>
+void Game<T>::Update() {
+  for (int j = 0; j < 66; j++) {
+    this->findAJob.lock();
+    this->jobs.push_back(j);
+    this->findAJob.unlock();
   }
 }
 
+/**
+ * Find a logical job to do.
+ */
 template <class T>
-void Game<T>::Update() {}
+void Game<T>::Work() {
+  // Choose a job to do
+  // Tell everybody to let him choose
+  this->findAJob.lock();
+  if (this->jobs.size() != 0) {
+    auto currentJob = this->jobs.front();
+    this->jobs.erase(this->jobs.begin());  // I'll take that
+    // Do the job
+  }
+  this->findAJob.unlock();  // Okay your turn dear other threads
+}
 
 template <class T>
 void Game<T>::Run() {
@@ -212,7 +246,6 @@ void Game<T>::Run() {
   */
 
   while (this->device->IsOpen()) {
-    this->Update();
     /*ClearArgs args = {.framebuffer = 0,
                       .color = {1.0f, 0.0f, 1.0f, 1.0f},
                       .color_buffer = true,
@@ -244,5 +277,9 @@ void Game<T>::Run() {
 
     this->device->Swap();
     this->device->PollEvents();
+  }
+  this->running = false;
+  for (int i = 0; i < this->workers.size(); i++) {
+    this->workers[i].join();
   }
 }

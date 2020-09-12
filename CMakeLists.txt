@@ -29,6 +29,7 @@ add_library(logic
     source/logic/CTransform.cpp source/logic/CTransform.h
     source/logic/CLabel.h
     source/logic/CMeshInstance.cpp source/logic/CMeshInstance.h
+    source/logic/CCamera.cpp source/logic/CCamera.h
     source/logic/Game.cpp source/logic/Game.h
     source/logic/Ecs.h
 )

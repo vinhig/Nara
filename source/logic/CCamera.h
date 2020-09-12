@@ -1,9 +1,9 @@
 //
-// Created by vincent on 11.09.20.
+// Created by vincent on 12.09.20.
 //
 
-#ifndef NARA_SOURCE_LOGIC_CTRANSFORM_H_
-#define NARA_SOURCE_LOGIC_CTRANSFORM_H_
+#ifndef NARA_SOURCE_LOGIC_CCAMERA_H_
+#define NARA_SOURCE_LOGIC_CCAMERA_H_
 
 #include <glm/glm.hpp>
 #include <mutex>
@@ -11,18 +11,21 @@
 #include "../renderer/Frame.h"
 #include "Ecs.h"
 
-class CTransform : public IComponent {
+class CCamera : public IComponent {
  private:
   struct UniformStruct {
-    float model[16];
+    float projection[16];
+    float view[16];
   };
+  glm::mat4 projection;
+  glm::mat4 view;
 
   std::recursive_mutex vectorUpdate;
+  std::recursive_mutex matrixUpdate;
+  glm::vec3 lookAt;
   glm::vec3 position;
-  glm::vec3 rotation;
-  glm::vec3 scale;
 
-  glm::mat4 model;
+  float fov;
 
   uint32_t ubo;
   UniformStruct uniform = {};
@@ -33,11 +36,11 @@ class CTransform : public IComponent {
   bool uploaded = true;
 
  public:
-  CTransform(Entity* p_entity) : IComponent(p_entity){};
-  ~CTransform(){};
+  CCamera(Entity* p_entity) : IComponent(p_entity){};
+  ~CCamera(){};
 
-  static const uint64_t UUID() { return 1; };
-  uint64_t m_UUID() override { return 1; };
+  static const uint64_t UUID() { return 4; };
+  uint64_t m_UUID() override { return 4; };
 
   /**
    * Logic initialization.
@@ -63,8 +66,7 @@ class CTransform : public IComponent {
   uint32_t Uniform() { return this->ubo; };
 
   void SetPosition(glm::vec3 position);
-  void SetRotation(glm::vec3 rotation);
-  void SetScale(glm::vec3 scale);
+  void SetLookAt(glm::vec3 position);
 
   /**
    * Render update. Generate a draw call.
@@ -93,4 +95,4 @@ class CTransform : public IComponent {
   };
 };
 
-#endif  // NARA_SOURCE_LOGIC_CTRANSFORM_H_
+#endif  // NARA_SOURCE_LOGIC_CCAMERA_H_

@@ -31,6 +31,8 @@ class Entity {
   Entity(System* p_system) { this->system = p_system; };
   ~Entity() = default;
 
+  System* CorrespondingSystem() { return this->system; };
+
   /**
    * Get the component targeting this entity.
    * Or create a new one if it doesn't exist.
@@ -46,6 +48,8 @@ class Entity {
  */
 class IComponent {
  private:
+  bool active;
+
  public:
   /**
    * Owner of this component
@@ -64,6 +68,9 @@ class IComponent {
    */
   // static const uint64_t uuid = 0;
   virtual uint64_t m_UUID() { return 0; };
+
+  virtual bool IsActive() { return this->active; }
+  virtual void SetActive(bool active) { this->active = active; };
 
   /**
    * Initialize ("logically") this component.
@@ -113,6 +120,13 @@ class System {
   T* Get(Entity* parent);
 
   /**
+   * Get the first component active with a 'T' type.
+   * The component returned isn't unique.
+   */
+  template <typename T>
+  T* GetFirstActive();
+
+  /**
    * Initialize every components.
    * Has to be called before every other action methods.
    */
@@ -157,6 +171,17 @@ T* System::Get(Entity* parent) {
     // (represented by a uuid).
     if (subComponents[i]->entity == parent &&
         ((T*)subComponents[i])->UUID() == T::UUID()) {
+      return (T*)subComponents[i];
+    }
+  }
+  return nullptr;
+};
+
+template <typename T>
+T* System::GetFirstActive() {
+  auto subComponents = this->components[T::UUID()];
+  for (int i = 0; i < subComponents.size(); i++) {
+    if (subComponents[i]->IsActive()) {
       return (T*)subComponents[i];
     }
   }

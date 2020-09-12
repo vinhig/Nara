@@ -4,6 +4,8 @@
 
 #include "CMeshInstance.h"
 
+#include "CCamera.h"
+
 void CMeshInstance::Initialize() {
   std::cout << "INITIATING CMeshInstance" << std::endl;
   // Need a transform
@@ -23,17 +25,19 @@ DrawCall CMeshInstance::Draw() {
   // Fetch information for this mesh
   actualCall.vao = this->vao;
   actualCall.ibo = this->ibo;
-  actualCall.uniforms = new Array<uint32_t>(1);
+  actualCall.uniforms = new Array<uint32_t>(2);
   actualCall.count = this->count;
 
   // Fetch information for the uniform buffer
   // From CTransform
+  actualCall.uniforms->Add(this->entity->CorrespondingSystem()
+                               ->GetFirstActive<CCamera>()
+                               ->Uniform());
+
   actualCall.uniforms->Add(this->transform->Uniform());
 
   // Fetch textures
   actualCall.textures = this->material->Textures();
-
-  // TODO: fetch textures and material detail
 
   // Feed the union
   call.single = actualCall;

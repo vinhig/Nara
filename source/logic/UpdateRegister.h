@@ -14,10 +14,12 @@ enum UpdateFlags {
 
 class UpdateRegister {
  public:
-  static constexpr int ComponentType[3] = {
+  static constexpr int ComponentType[] = {
       ShouldNothing,        // IComponent
       ShouldUpdateAndDraw,  // CTransform
       ShouldDraw,           // CMeshInstance
+      ShouldNothing,        // CMaterial
+      ShouldUpdateAndDraw,  // CCamera
   };
 };
 

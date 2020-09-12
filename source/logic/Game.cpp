@@ -4,6 +4,7 @@
 
 #include "Game.h"
 
+#include <math.h>
 #include <string.h>
 
 #include <glm/common.hpp>
@@ -14,6 +15,7 @@
 #include "../common/Macros.h"
 #include "../loader/DefaultTextureLoader.h"
 #include "../loader/FbxMeshLoader.h"
+#include "CCamera.h"
 #include "CMaterial.h"
 #include "CMeshInstance.h"
 #include "UpdateRegister.h"
@@ -93,6 +95,10 @@ void Game<T>::Run() {
   // Create a testing monkey
   Entity *monkey = new Entity(this->world);
 
+  Entity *camera = new Entity(this->world);
+
+  CCamera *cameraCCamera = camera->GetOrCreate<CCamera>();
+
   // Prepare something to load our mesh and textures
   FbxMeshLoader *meshLoader = new FbxMeshLoader();
   DefaultTextureLoader *textureLoader = new DefaultTextureLoader();
@@ -109,8 +115,8 @@ void Game<T>::Run() {
   CMaterial *sphereCMaterial = sphere->GetOrCreate<CMaterial>();
   CMaterial *monkeyCMaterial = monkey->GetOrCreate<CMaterial>();
   sphereCMaterial->diffusePath = "assets/textures/doc.png";
-  monkeyCMaterial->diffusePath = "assets/textures/test.jpg";
-  sphereCMaterial->normalPath = "assets/textures/test.png";
+  monkeyCMaterial->diffusePath = "assets/textures/doc.png";
+  sphereCMaterial->normalPath = "assets/textures/doc.png";
   monkeyCMaterial->normalPath = "assets/textures/doc.png";
   sphereCMaterial->loader = textureLoader;
   monkeyCMaterial->loader = textureLoader;
@@ -119,6 +125,7 @@ void Game<T>::Run() {
   this->world->Initialize();
 
   // Manually launch loading step
+  cameraCCamera->Initialize<Device<T>>(this->device);
   sphereCMesh->Initialize<Device<T>>(this->device);
   monkeyCMesh->Initialize<Device<T>>(this->device);
   sphereCMaterial->Initialize<Device<T>>(this->device);
@@ -302,6 +309,9 @@ void Game<T>::Run() {
           } else if (it->second[i]->m_UUID() == 1) {
             ((CTransform *)it->second[i])->Upload(this->device);
             call = ((CTransform *)it->second[i])->Draw();
+          } else if (it->second[i]->m_UUID() == 4) {
+            ((CCamera *)it->second[i])->Upload(this->device);
+            call = ((CCamera *)it->second[i])->Draw();
           }
 
           switch (call.subtype) {
@@ -326,7 +336,12 @@ void Game<T>::Run() {
 
     monkey->GetOrCreate<CTransform>()->SetRotation(
         glm::vec3(moove, 0.0f, moove));
-    moove += 2;
+
+    sphere->GetOrCreate<CTransform>()->SetPosition(
+        glm::vec3((float)cos(moove / 30.0f) * 2.0f, 0.0f,
+                  (float)sin(moove / 30.0f) * 2.0f));
+
+    moove += 2.0f;
 
     /*currentFrame->AddDCInstanced(
         {{vao_sphere, ibo_sphere, textures, ubos, sphere.indicesCount}, 4});

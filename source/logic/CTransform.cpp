@@ -32,13 +32,10 @@ void CTransform::Update() {
     auto rotationZ = glm::rotate(glm::radians(this->rotation.z),
                                  glm::vec3(0.0f, 0.0f, 1.0f));
     auto rotation = rotationX * rotationY * rotationZ;
-    this->vectorUpdate.unlock();
-
-    this->modelUpdate.lock();
     this->model = translation * rotation * scale;
     memcpy(&this->uniform.model[0], &this->model[0][0], 16 * sizeof(float));
 
-    this->modelUpdate.unlock();
+    this->vectorUpdate.unlock();
     this->uploaded = false;
     this->updated = false;
   }
@@ -64,10 +61,6 @@ void CTransform::SetScale(glm::vec3 scale) {
 };
 
 DrawCall CTransform::Draw() {
-  // Loading uniform buffer
-  // device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
-  // std::cout << "Coucou depuis CTransform::Draw" << std::endl;
-
   DrawCall call = {};
   call.subtype = DrawCallType::NoneDrawCall;
 

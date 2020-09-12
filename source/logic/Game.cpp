@@ -14,6 +14,7 @@
 #include "../common/Macros.h"
 #include "../loader/DefaultTextureLoader.h"
 #include "../loader/FbxMeshLoader.h"
+#include "CMaterial.h"
 #include "CMeshInstance.h"
 #include "UpdateRegister.h"
 
@@ -92,8 +93,9 @@ void Game<T>::Run() {
   // Create a testing monkey
   Entity *monkey = new Entity(this->world);
 
-  // Prepare something to load our mesh
+  // Prepare something to load our mesh and textures
   FbxMeshLoader *meshLoader = new FbxMeshLoader();
+  DefaultTextureLoader *textureLoader = new DefaultTextureLoader();
 
   // Populate our entity with a visual component
   CMeshInstance *sphereCMesh = sphere->GetOrCreate<CMeshInstance>();
@@ -103,12 +105,24 @@ void Game<T>::Run() {
   sphereCMesh->loader = meshLoader;
   monkeyCMesh->loader = meshLoader;
 
+  // Populate our entity with a visual component
+  CMaterial *sphereCMaterial = sphere->GetOrCreate<CMaterial>();
+  CMaterial *monkeyCMaterial = monkey->GetOrCreate<CMaterial>();
+  sphereCMaterial->diffusePath = "assets/textures/doc.png";
+  monkeyCMaterial->diffusePath = "assets/textures/test.jpg";
+  sphereCMaterial->normalPath = "assets/textures/test.png";
+  monkeyCMaterial->normalPath = "assets/textures/doc.png";
+  sphereCMaterial->loader = textureLoader;
+  monkeyCMaterial->loader = textureLoader;
+
   // Launch init step
   this->world->Initialize();
 
-  // Launch loading step
+  // Manually launch loading step
   sphereCMesh->Initialize<Device<T>>(this->device);
   monkeyCMesh->Initialize<Device<T>>(this->device);
+  sphereCMaterial->Initialize<Device<T>>(this->device);
+  monkeyCMaterial->Initialize<Device<T>>(this->device);
 
   // Spawn std::thread::hardware_concurrency() - 2 threads
   // Keep a master thread and a drawing thread

@@ -11,6 +11,7 @@
 #include <string>
 
 TextureSpec DefaultTextureLoader::Load(std::string path) {
+  std::cout << "Loading texture: " << path << std::endl;
   int width, height, nrChannels;
   stbi_set_flip_vertically_on_load(true);
   unsigned char* data =

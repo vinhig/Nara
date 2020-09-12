@@ -7,8 +7,11 @@
 void CMeshInstance::Initialize() {
   std::cout << "INITIATING CMeshInstance" << std::endl;
   // Need a transform
-  transform = this->entity->GetOrCreate<CTransform>();
-  transform->Initialize();
+  this->transform = this->entity->GetOrCreate<CTransform>();
+  this->transform->Initialize();
+
+  // Need a material
+  this->material = this->entity->GetOrCreate<CMaterial>();
 }
 
 DrawCall CMeshInstance::Draw() {
@@ -20,13 +23,15 @@ DrawCall CMeshInstance::Draw() {
   // Fetch information for this mesh
   actualCall.vao = this->vao;
   actualCall.ibo = this->ibo;
-  actualCall.textures = new Array<uint32_t>(0);
   actualCall.uniforms = new Array<uint32_t>(1);
   actualCall.count = this->count;
 
   // Fetch information for the uniform buffer
   // From CTransform
   actualCall.uniforms->Add(this->transform->Uniform());
+
+  // Fetch textures
+  actualCall.textures = this->material->Textures();
 
   // TODO: fetch textures and material detail
 

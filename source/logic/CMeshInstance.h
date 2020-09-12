@@ -9,6 +9,7 @@
 
 #include "../loader/MeshLoader.h"
 #include "../renderer/Frame.h"
+#include "CMaterial.h"
 #include "CTransform.h"
 #include "Ecs.h"
 
@@ -21,6 +22,7 @@ class CMeshInstance : public IComponent {
   int count;
 
   CTransform* transform;
+  CMaterial* material;
 
  public:
   std::string path;

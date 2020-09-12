@@ -12,6 +12,20 @@
 
 #include "../renderer/BackendOgl.h"
 #include "../renderer/Device.h"
+#include "Ecs.h"
+
+enum JobType {
+  ComponentUpdate,
+  SoundAction,
+  FileReadWrite,
+};
+
+struct Job {
+  union {
+    IComponent *component;
+  };
+  JobType subtype;
+};
 
 template <class T>
 class Game {
@@ -21,9 +35,11 @@ class Game {
   uint currentFrame = 0;
 
   std::vector<std::thread> workers;
-  std::deque<int> jobs;
+  std::deque<Job> jobs;
 
   std::recursive_mutex findAJob;
+
+  System *world;
 
   bool running;
 
@@ -34,7 +50,7 @@ class Game {
   int SetDevice(Device<T> *p_device);
   void Update();
   void Run();
-  void Work();
+  void Work(int workerID);
 };
 
 template class Game<BackendOgl>;

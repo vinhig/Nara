@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 
+#include "../renderer/Frame.h"
 #include "Ecs.h"
 
 class CTransform : public IComponent {
@@ -30,8 +31,8 @@ class CTransform : public IComponent {
   CTransform(Entity* p_entity) : IComponent(p_entity){};
   ~CTransform(){};
 
-  static const uint64_t uuid = 1;
-  const uint64_t UUID() override { return this->uuid; };
+  static const uint64_t UUID() { return 1; };
+  uint64_t m_UUID() override { return 1; };
 
   glm::mat4 Model();
 
@@ -39,14 +40,6 @@ class CTransform : public IComponent {
    * Logic initialization.
    */
   void Initialize() override;
-  /**
-   * Logic update.
-   */
-  void Update() override;
-
-  void SetPosition(glm::vec3 position);
-  void SetRotation(glm::vec3 rotation);
-  void SetScale(glm::vec3 scale);
 
   /**
    * Render initialization.
@@ -55,18 +48,57 @@ class CTransform : public IComponent {
   template <typename D>
   void Initialize(D* device) {
     // Loading uniform buffer
-    device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
+    this->ubo = device->CreateUbo((void*)&this->uniform, sizeof(UniformStruct));
+    std::cout << "this->ubo = " << this->ubo << std::endl;
   };
 
   /**
-   * Render update.
-   * Need access to the current device for GPU manipulation.
+   * Logic update.
+   */
+  void Update() override;
+
+  uint32_t Uniform() { return this->ubo; };
+
+  void SetPosition(glm::vec3 position);
+  void SetRotation(glm::vec3 rotation);
+  void SetScale(glm::vec3 scale);
+
+  /**
+   * Render update. Generate a draw call.
+   * Doesn't modify anything on the GPU
+   */
+  DrawCall Draw() {
+    // Loading uniform buffer
+    // device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
+    // std::cout << "Coucou depuis CTransform::Draw" << std::endl;
+
+    DrawCall call = {};
+    call.subtype = DrawCallType::NoneDrawCall;
+
+    return call;
+  };
+
+  /**
+   * Render update. Modify resources on the GPU.
+   * Need access to device.
    */
   template <typename D>
-  void Update(D* device) {
+  void Upload(D* device) {
     // Loading uniform buffer
-    device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
+    // device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
+    // std::cout << "Coucou depuis CTransform::Upload<Device>" << std::endl;
+
+    if (this->updated) {
+      // Update uniform buffer
+    }
   };
 };
+
+#ifndef CTRANSFORM_IMPLEMENTATION
+#define CTRANSFORM_IMPLEMENTATION
+
+// const uint64_t CTransform::uuid = 1;
+
+#endif  // CTRANSFORM_IMPLEMENTATION
 
 #endif  // NARA_SOURCE_LOGIC_CTRANSFORM_H_

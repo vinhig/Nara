@@ -14,8 +14,8 @@
 #include "../common/Macros.h"
 #include "../loader/DefaultTextureLoader.h"
 #include "../loader/FbxMeshLoader.h"
-#include "../logic/CMeshInstance.h"
-#include "../logic/Ecs.h"
+#include "CMeshInstance.h"
+#include "UpdateRegister.h"
 
 template <class T>
 Game<T>::Game() = default;
@@ -30,28 +30,6 @@ int Game<T>::SetDevice(Device<T> *p_device) {
     this->width = this->device->Width();
     this->height = this->device->Height();
     this->running = true;
-
-    // Spawn std::thread::hardware_concurrency() - 2 threads
-    // Keep a master thread and a drawing thread
-    // TODO: make exception when there are only two or less threads.
-    std::cout << std::thread::hardware_concurrency() << std::endl;
-    // Master thread
-    workers.push_back(std::thread([this]() {
-      while (this->running) {
-        // TODO: Keep a 144 Hz tick frequency
-        this->Update();
-      };
-    }));
-
-    // Workers threads
-    for (int i = 0; i < std::thread::hardware_concurrency() - 2; i++) {
-      workers.push_back(std::thread([this]() {
-        while (this->running) {
-          this->Work();
-        }
-      }));
-    }
-
     return 0;
   }
 
@@ -64,10 +42,19 @@ int Game<T>::SetDevice(Device<T> *p_device) {
  */
 template <class T>
 void Game<T>::Update() {
-  for (int j = 0; j < 66; j++) {
-    this->findAJob.lock();
-    this->jobs.push_back(j);
-    this->findAJob.unlock();
+  for (auto it = this->world->components.begin();
+       it != this->world->components.end(); ++it) {
+    if (UpdateRegister::ComponentType[it->first] == ShouldUpdate ||
+        UpdateRegister::ComponentType[it->first] == ShouldUpdateAndDraw) {
+      for (int i = 0; i < it->second.size(); i++) {
+        this->findAJob.lock();
+        Job job = {};
+        job.component = it->second[i];
+        job.subtype = JobType::ComponentUpdate;
+        this->jobs.push_back(job);
+        this->findAJob.unlock();
+      }
+    }
   }
 }
 
@@ -75,7 +62,7 @@ void Game<T>::Update() {
  * Find a logical job to do.
  */
 template <class T>
-void Game<T>::Work() {
+void Game<T>::Work(int workerID) {
   // Choose a job to do
   // Tell everybody to let him choose
   this->findAJob.lock();
@@ -83,6 +70,9 @@ void Game<T>::Work() {
     auto currentJob = this->jobs.front();
     this->jobs.erase(this->jobs.begin());  // I'll take that
     // Do the job
+    if (currentJob.subtype == JobType::ComponentUpdate) {
+      currentJob.component->Update();
+    }
   }
   this->findAJob.unlock();  // Okay your turn dear other threads
 }
@@ -94,13 +84,13 @@ void Game<T>::Run() {
 
   size_t vertexStride = sizeof(float) * 8;
 
-  System *world = new System();
+  this->world = new System();
 
   // Create a testing sphere
-  Entity *sphere = new Entity(world);
+  Entity *sphere = new Entity(this->world);
 
   // Create a testing monkey
-  Entity *monkey = new Entity(world);
+  Entity *monkey = new Entity(this->world);
 
   // Prepare something to load our mesh
   FbxMeshLoader *meshLoader = new FbxMeshLoader();
@@ -114,11 +104,32 @@ void Game<T>::Run() {
   monkeyCMesh->loader = meshLoader;
 
   // Launch init step
-  world->Initialize();
+  this->world->Initialize();
 
   // Launch loading step
-  sphereCMesh->Load<Device<T>>(this->device);
-  monkeyCMesh->Load<Device<T>>(this->device);
+  sphereCMesh->Initialize<Device<T>>(this->device);
+  monkeyCMesh->Initialize<Device<T>>(this->device);
+
+  // Spawn std::thread::hardware_concurrency() - 2 threads
+  // Keep a master thread and a drawing thread
+  // TODO: make exception when there are only two or less threads.
+  std::cout << std::thread::hardware_concurrency() << std::endl;
+  // Master thread
+  workers.push_back(std::thread([this]() {
+    while (this->running) {
+      // TODO: Keep a 144 Hz tick frequency
+      this->Update();
+    };
+  }));
+
+  // Workers threads
+  for (int i = 0; i < std::thread::hardware_concurrency() - 2; i++) {
+    workers.push_back(std::thread([this, i]() {
+      while (this->running) {
+        this->Work(i);
+      }
+    }));
+  }
 
   // Our first triangle
   // float triangleVertices[] = {
@@ -264,6 +275,41 @@ void Game<T>::Run() {
     // currentFrame++;
 
     Frame *currentFrame = this->device->SpawnFrame();
+
+    for (auto it = this->world->components.begin();
+         it != this->world->components.end(); ++it) {
+      if (UpdateRegister::ComponentType[it->first] == ShouldDraw ||
+          UpdateRegister::ComponentType[it->first] == ShouldUpdateAndDraw) {
+        for (int i = 0; i < it->second.size(); i++) {
+          DrawCall call;
+          if (it->second[i]->m_UUID() == 2) {
+            ((CMeshInstance *)it->second[i])->Upload(this->device);
+            call = ((CMeshInstance *)it->second[i])->Draw();
+          } else if (it->second[i]->m_UUID() == 1) {
+            ((CTransform *)it->second[i])->Upload(this->device);
+            call = ((CTransform *)it->second[i])->Draw();
+          }
+
+          switch (call.subtype) {
+            case DrawCallType::NoneDrawCall:
+              /* code */
+              break;
+            case DrawCallType::SingleDrawCall: {
+              currentFrame->AddDCSingle(call.single);
+              break;
+            }
+            case DrawCallType::InstancedDrawCall: {
+              currentFrame->AddDCInstanced(call.instanced);
+              break;
+            }
+
+            default:
+              break;
+          }
+        }
+      }
+    }
+
     /*currentFrame->AddDCInstanced(
         {{vao_sphere, ibo_sphere, textures, ubos, sphere.indicesCount}, 4});
     /*currentFrame->AddDCSingle({vao_triangle, ibo_triangle, texture_test_jpg,

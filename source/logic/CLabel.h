@@ -14,8 +14,7 @@ class CLabel : public IComponent {
   std::string label;
 
  public:
-  static const uint64_t uuid = 1;
-  const uint64_t UUID() override { return this->uuid; };
+  static const uint64_t UUID() { return 3; };
 
   CLabel(Entity* p_entity) : IComponent(p_entity){};
   ~CLabel(){};

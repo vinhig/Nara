@@ -101,6 +101,12 @@ void Device<T>::EatFrame(Frame *frame) {
   uint32_t previousUniformBuffer = 0;
   for (size_t i = 0; i < frame->singleDrawCalls.Count(); i++) {
     auto drawCall = frame->singleDrawCalls[i];
+    if (drawCall.vao == 0) {
+      throw std::runtime_error("Suspect vao to be illformed.");
+    }
+    if (drawCall.ibo == 0) {
+      throw std::runtime_error("Suspect ibo to be illformed.");
+    }
     this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.textures,
                          drawCall.uniforms, drawCall.count);
   }

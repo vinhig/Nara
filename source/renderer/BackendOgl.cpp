@@ -126,6 +126,9 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
     glBindVertexArray(vao);
   }
   for (int i = 0; i < textures->Count(); i++) {
+    if (textures->Get(i) == 0) {
+      throw std::runtime_error("Null texture.");
+    }
     glBindTextureUnit(i, textures->Get(i));
   }
   if (previousIbo != ibo) {
@@ -133,6 +136,9 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   }
   for (int i = 0; i < uniforms->Count(); i++) {
+    if (uniforms->Get(i) == 0) {
+      throw std::runtime_error("Null uniform buffer.");
+    }
     glBindBufferBase(GL_UNIFORM_BUFFER, i, uniforms->Get(i));
   }
 
@@ -152,6 +158,9 @@ void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
     glBindVertexArray(vao);
   }
   for (int i = 0; i < textures->Count(); i++) {
+    if (textures->Get(i) == 0) {
+      throw std::runtime_error("Null texture.");
+    }
     glBindTextureUnit(i, textures->Get(i));
   }
   if (previousIbo != ibo) {
@@ -159,6 +168,9 @@ void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   }
   for (int i = 0; i < uniforms->Count(); i++) {
+    if (uniforms->Get(i) == 0) {
+      throw std::runtime_error("Null uniform buffer.");
+    }
     glBindBufferBase(GL_UNIFORM_BUFFER, i, uniforms->Get(i));
   }
 

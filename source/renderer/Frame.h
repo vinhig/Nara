@@ -38,6 +38,20 @@ struct DCInstanced {
 };
 typedef struct DCInstanced DCInstanced;
 
+enum DrawCallType {
+  InstancedDrawCall,
+  SingleDrawCall,
+  NoneDrawCall,
+};
+
+struct DrawCall {
+  union {
+    DCInstanced instanced;
+    DCSingle single;
+  };
+  DrawCallType subtype;
+};
+
 /**
  * Frame register actions to be executed in the next frame.
  */

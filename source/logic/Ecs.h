@@ -5,6 +5,7 @@
 #ifndef NARA_SOURCE_LOGIC_ECS_H_
 #define NARA_SOURCE_LOGIC_ECS_H_
 
+#include <unordered_map>
 #include <vector>
 
 #include "../common/Array.h"
@@ -61,8 +62,8 @@ class IComponent {
    * Unique identitifer.
    * Used as a reflection method (to compare types).
    */
-  static const uint64_t uuid = 0;
-  virtual const uint64_t UUID() { return this->uuid; }
+  // static const uint64_t uuid = 0;
+  virtual uint64_t m_UUID() { return 0; };
 
   /**
    * Initialize ("logically") this component.
@@ -86,17 +87,23 @@ class System {
    * All components of this scene.
    * No sorted by type.
    */
-  std::vector<IComponent*> components;
+  // std::vector<IComponent*> components;
 
  public:
   System(){};
   ~System(){};
 
   /**
+   * All components of this scene.
+   * Sorted by type.
+   */
+  std::unordered_map<uint64_t, std::vector<IComponent*>> components;
+
+  /**
    * Append a new component.
    */
   template <typename T>
-  void Append(T component);
+  void Append(T* component);
 
   /**
    * Get the component owned by 'parent' with a 'T' type.
@@ -110,8 +117,11 @@ class System {
    * Has to be called before every other action methods.
    */
   void Initialize() {
-    for (int i = 0; i < this->components.size(); i++) {
-      this->components[i]->Initialize();
+    for (auto it = this->components.begin(); it != this->components.end();
+         ++it) {
+      for (int i = 0; i < it->second.size(); i++) {
+        it->second[i]->Initialize();
+      }
     }
   }
 };
@@ -132,18 +142,22 @@ T* Entity::GetOrCreate() {
 };
 
 template <typename T>
-void System::Append(T component) {
-  this->components.push_back(component);
+void System::Append(T* component) {
+  if (this->components.find(T::UUID()) == this->components.end()) {
+    this->components[T::UUID()];
+  }
+  this->components[T::UUID()].push_back(component);
 };
 
 template <typename T>
 T* System::Get(Entity* parent) {
-  for (int i = 0; i < this->components.size(); i++) {
+  auto subComponents = this->components[T::UUID()];
+  for (int i = 0; i < subComponents.size(); i++) {
     // Compare owner of the component and the actual type of the component
     // (represented by a uuid).
-    if (this->components[i]->entity == parent &&
-        ((T*)this->components[i])->UUID() == T::uuid) {
-      return (T*)this->components[i];
+    if (subComponents[i]->entity == parent &&
+        ((T*)subComponents[i])->UUID() == T::UUID()) {
+      return (T*)subComponents[i];
     }
   }
   return nullptr;

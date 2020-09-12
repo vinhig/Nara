@@ -35,12 +35,7 @@ class CMeshInstance : public IComponent {
   /**
    * Logic initialization.
    */
-  void Initialize() override {
-    std::cout << "INITIATING CMeshInstance" << std::endl;
-    // Need a transform
-    transform = this->entity->GetOrCreate<CTransform>();
-    transform->Initialize();
-  };
+  void Initialize() override;
 
   /**
    * Render initialization.
@@ -76,29 +71,7 @@ class CMeshInstance : public IComponent {
    * Render update. Generate a draw call.
    * Doesn't modify anything on the GPU
    */
-  DrawCall Draw() {
-    // std::cout << "Coucou depuis CMeshInstance::Draw<Device>" << std::endl;
-    // Generating a draw call
-    DrawCall call = {};
-    call.subtype = DrawCallType::SingleDrawCall;
-    DCSingle actualCall = {};
-
-    // Fetch information for this mesh
-    actualCall.vao = this->vao;
-    actualCall.ibo = this->ibo;
-    actualCall.textures = new Array<uint32_t>(0);
-    actualCall.uniforms = new Array<uint32_t>(1);
-    actualCall.count = this->count;
-
-    // Fetch information for the uniform buffer
-    // From CTransform
-    actualCall.uniforms->Add(this->transform->Uniform());
-
-    // Feed the union
-    call.single = actualCall;
-
-    return call;
-  }
+  DrawCall Draw();
 
   /**
    * Render update. Modify resources on the GPU.
@@ -110,12 +83,5 @@ class CMeshInstance : public IComponent {
       // std::endl;
   };
 };
-
-#ifndef CMESHINSTANCE_IMPLEMENTATION
-#define CMESHINSTANCE_IMPLEMENTATION
-
-// const uint64_t CMeshInstance::uuid = 1;
-
-#endif  // CMESHINSTANCE_IMPLEMENTATION
 
 #endif  // NARA_SOURCE_LOGIC_CMESHINSTANCE_H_

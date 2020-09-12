@@ -34,8 +34,6 @@ class CTransform : public IComponent {
   static const uint64_t UUID() { return 1; };
   uint64_t m_UUID() override { return 1; };
 
-  glm::mat4 Model();
-
   /**
    * Logic initialization.
    */
@@ -67,16 +65,7 @@ class CTransform : public IComponent {
    * Render update. Generate a draw call.
    * Doesn't modify anything on the GPU
    */
-  DrawCall Draw() {
-    // Loading uniform buffer
-    // device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
-    // std::cout << "Coucou depuis CTransform::Draw" << std::endl;
-
-    DrawCall call = {};
-    call.subtype = DrawCallType::NoneDrawCall;
-
-    return call;
-  };
+  DrawCall Draw();
 
   /**
    * Render update. Modify resources on the GPU.
@@ -93,12 +82,5 @@ class CTransform : public IComponent {
     }
   };
 };
-
-#ifndef CTRANSFORM_IMPLEMENTATION
-#define CTRANSFORM_IMPLEMENTATION
-
-// const uint64_t CTransform::uuid = 1;
-
-#endif  // CTRANSFORM_IMPLEMENTATION
 
 #endif  // NARA_SOURCE_LOGIC_CTRANSFORM_H_

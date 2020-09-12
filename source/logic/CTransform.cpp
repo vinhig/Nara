@@ -23,3 +23,14 @@ void CTransform::Update() {
     std::cout << "Updating CTransform" << std::endl;
   }
 }
+
+DrawCall CTransform::Draw() {
+  // Loading uniform buffer
+  // device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
+  // std::cout << "Coucou depuis CTransform::Draw" << std::endl;
+
+  DrawCall call = {};
+  call.subtype = DrawCallType::NoneDrawCall;
+
+  return call;
+};

@@ -35,6 +35,7 @@ class Backend {
                              Array<uint32_t>* uniforms, int count,
                              int primcount) = 0;
   virtual void FeedTexture(unsigned char* data) = 0;
+  virtual void UpdateBuffer(uint32_t buffer, void* data, size_t size) = 0;
   virtual void UseProgram(uint32_t program) = 0;
 
   // Device methods

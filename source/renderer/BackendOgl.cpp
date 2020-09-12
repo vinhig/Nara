@@ -180,6 +180,10 @@ void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
 
 void BackendOgl::FeedTexture(unsigned char *data) {}
 
+void BackendOgl::UpdateBuffer(uint32_t buffer, void *data, size_t size) {
+  glNamedBufferSubData(buffer, 0, size, data);
+}
+
 void BackendOgl::UseProgram(uint32_t program) { glUseProgram(program); }
 
 // Device methods

@@ -44,6 +44,7 @@ class BackendOgl : public Backend {
                      Array<uint32_t> *uniforms, int count,
                      int primcount) override;
   void FeedTexture(unsigned char *data) override;
+  void UpdateBuffer(uint32_t buffer, void *data, size_t size) override;
   void UseProgram(uint32_t program) override;
 
   // Device methods

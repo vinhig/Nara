@@ -96,6 +96,15 @@ Frame *Device<T>::SpawnFrame() {
 }
 
 template <typename T>
+void Device<T>::UpdateUbo(uint32_t buffer, void *data, size_t size) {
+  if (data && size && buffer) {
+    this->gl->UpdateBuffer(buffer, data, size);
+  } else {
+    throw std::runtime_error("Cannot properly update buffer.");
+  }
+}
+
+template <typename T>
 void Device<T>::EatFrame(Frame *frame) {
   this->gl->UseProgram(frame->GetProgramSingle());
   uint32_t previousUniformBuffer = 0;

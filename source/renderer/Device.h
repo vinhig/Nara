@@ -38,6 +38,7 @@ class Device {
    * Erase previous frame and init new one.
    */
   Frame *SpawnFrame();
+  void UpdateUbo(uint32_t buffer, void *data, size_t size);
   /**
    * Consume current frame.
    */

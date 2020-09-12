@@ -6,6 +6,7 @@
 #define NARA_SOURCE_LOGIC_CTRANSFORM_H_
 
 #include <glm/glm.hpp>
+#include <mutex>
 
 #include "../renderer/Frame.h"
 #include "Ecs.h"
@@ -16,6 +17,8 @@ class CTransform : public IComponent {
     float model[16];
   };
 
+  std::recursive_mutex vectorUpdate;
+  std::recursive_mutex modelUpdate;
   glm::vec3 position;
   glm::vec3 rotation;
   glm::vec3 scale;
@@ -25,7 +28,10 @@ class CTransform : public IComponent {
   uint32_t ubo;
   UniformStruct uniform = {};
 
+  // Should logically update model matrix
   bool updated = false;
+  // Should upload to buffer
+  bool uploaded = true;
 
  public:
   CTransform(Entity* p_entity) : IComponent(p_entity){};
@@ -77,8 +83,11 @@ class CTransform : public IComponent {
     // device->CreateUbo((void*)this->uniform, sizeof(UniformStruct));
     // std::cout << "Coucou depuis CTransform::Upload<Device>" << std::endl;
 
-    if (this->updated) {
+    if (!this->uploaded) {
       // Update uniform buffer
+      device->UpdateUbo(this->ubo, (void*)&this->uniform,
+                        sizeof(UniformStruct));
+      this->uploaded = true;
     }
   };
 };

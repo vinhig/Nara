@@ -255,7 +255,7 @@ void Game<T>::Run() {
   textures->Add(texture_test_png);
   textures->Add(texture_test_jpg);
   */
-
+  float moove = 0.0f;
   while (this->device->IsOpen()) {
     /*ClearArgs args = {.framebuffer = 0,
                       .color = {1.0f, 0.0f, 1.0f, 1.0f},
@@ -309,6 +309,10 @@ void Game<T>::Run() {
         }
       }
     }
+
+    monkey->GetOrCreate<CTransform>()->SetRotation(
+        glm::vec3(moove, 0.0f, moove));
+    moove += 2;
 
     /*currentFrame->AddDCInstanced(
         {{vao_sphere, ibo_sphere, textures, ubos, sphere.indicesCount}, 4});

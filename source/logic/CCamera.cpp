@@ -22,6 +22,7 @@ void CCamera::Initialize() {
                                       1024.0f / 768.0f, 0.1f, 100.0f);
   memcpy(&uniform.projection[0], &this->projection[0][0], 16 * sizeof(float));
   memcpy(&uniform.view[0], &this->view[0][0], 16 * sizeof(float));
+  this->SetActive(true);
 }
 
 void CCamera::Update() {

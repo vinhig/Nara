@@ -23,7 +23,7 @@ class CTerrain : public IComponent {
   CTransform* transform;
 
  public:
-  int width, height, precision;
+  int width, precision;
 
   static const uint64_t UUID() { return 5; };
   uint64_t m_UUID() override { return 5; };
@@ -44,43 +44,41 @@ class CTerrain : public IComponent {
   void Initialize(D* device) {
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
-    vertices.reserve(width * height);
-    indices.reserve(width * height * 3);
+    vertices.reserve(width * width * 3 + width * width * 3 + width * width * 2);
+    indices.reserve(width * width * 3);
 
-    float wh = (float)width / 2.0f;               // half width
-    float hh = (float)width / 2.0f;               // half height
-    float ws = (float)width / (float)precision;   // width step
-    float hs = (float)height / (float)precision;  // width step
+    float wh = (float)width / 2.0f;              // half width
+    float ws = (float)width / (float)precision;  // width step
+
+    int nbLine = 0;
+
     for (float w = -wh; w <= wh; w += ws) {
-      for (float h = -hh; h <= hh; h += hs) {
+      for (float h = -wh; h <= wh; h += ws) {
+        std::cout << "Adding {" << w << ", 0.0, " << h << "}" << std::endl;
         vertices.push_back(w);
-        vertices.push_back(0.0);
+        vertices.push_back(-1.0);
         vertices.push_back(h);
 
         vertices.push_back(0.0);
         vertices.push_back(1.0);
         vertices.push_back(0.0);
 
-        vertices.push_back(w);
-        vertices.push_back(h);
+        vertices.push_back(1 - (w + wh) / (float)width);
+        vertices.push_back(1 - (h + wh) / (float)width);
       }
+      nbLine++;
     }
 
-    for (int w = 0; w < width; w++) {
-      for (int h = 0; h < height; h++) {
-        // Current 'main' point
-        // auto main = w*height;
-        // Add it no matter what
-
-        if (!(w % 2)) {
-          indices.push_back(w * height + h);
-          indices.push_back(w * height + h + 1);
-          indices.push_back(w * (height + 1) + h);
-        } else {
-          indices.push_back(w * height + h);
-          indices.push_back(w * (height + 1) + h);
-          indices.push_back(w * (height + 1) + h - 1);
-        }
+    for (unsigned int i = 0; i < nbLine - 1; i++) {
+      for (unsigned int j = 0; j < nbLine - 1; j++) {
+        unsigned int actualIndex = i * nbLine + j;
+        indices.push_back(actualIndex);
+        indices.push_back(actualIndex + nbLine + 1);
+        indices.push_back(actualIndex + nbLine + 1 - 1);
+        // } else {
+        indices.push_back(actualIndex);
+        indices.push_back(actualIndex + 1);
+        indices.push_back(actualIndex + nbLine + 1);
       }
     }
 

@@ -100,10 +100,9 @@ void Game<T>::Run() {
 
   Entity *terrain = new Entity(this->world);
 
-  // CTerrain *terrainCTerrain = terrain->GetOrCreate<CTerrain>();
-  // terrainCTerrain->width = 10;
-  // terrainCTerrain->height = 10;
-  // terrainCTerrain->precision = 2;
+  CTerrain *terrainCTerrain = terrain->GetOrCreate<CTerrain>();
+  terrainCTerrain->width = 10;
+  terrainCTerrain->precision = 20;
 
   CCamera *cameraCCamera = camera->GetOrCreate<CCamera>();
 
@@ -138,7 +137,7 @@ void Game<T>::Run() {
   monkeyCMesh->Initialize<Device<T>>(this->device);
   sphereCMaterial->Initialize<Device<T>>(this->device);
   monkeyCMaterial->Initialize<Device<T>>(this->device);
-  // terrainCTerrain->Initialize<Device<T>>(this->device);
+  terrainCTerrain->Initialize<Device<T>>(this->device);
 
   // Spawn std::thread::hardware_concurrency() - 2 threads
   // Keep a master thread and a drawing thread
@@ -188,11 +187,13 @@ void Game<T>::Run() {
           } else if (it->second[i]->m_UUID() == 4) {
             ((CCamera *)it->second[i])->Upload(this->device);
             call = ((CCamera *)it->second[i])->Draw();
+          }else if (it->second[i]->m_UUID() == 5) {
+            ((CTerrain *)it->second[i])->Upload(this->device);
+            call = ((CTerrain *)it->second[i])->Draw();
           }
 
           switch (call.subtype) {
             case DrawCallType::NoneDrawCall:
-              /* code */
               break;
             case DrawCallType::SingleDrawCall: {
               currentFrame->AddDCSingle(call.single);

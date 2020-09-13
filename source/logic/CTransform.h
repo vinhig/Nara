@@ -52,7 +52,6 @@ class CTransform : public IComponent {
   void Initialize(D* device) {
     // Loading uniform buffer
     this->ubo = device->CreateUbo((void*)&this->uniform, sizeof(UniformStruct));
-    std::cout << "this->ubo = " << this->ubo << std::endl;
   };
 
   /**

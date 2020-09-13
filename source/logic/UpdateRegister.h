@@ -15,11 +15,12 @@ enum UpdateFlags {
 class UpdateRegister {
  public:
   static constexpr int ComponentType[] = {
-      ShouldNothing,        // IComponent
-      ShouldUpdateAndDraw,  // CTransform
-      ShouldDraw,           // CMeshInstance
-      ShouldNothing,        // CMaterial
-      ShouldUpdateAndDraw,  // CCamera
+      ShouldNothing,        // IComponent = 0
+      ShouldUpdateAndDraw,  // CTransform = 1
+      ShouldDraw,           // CMeshInstance = 2
+      ShouldNothing,        // CMaterial = 3
+      ShouldUpdateAndDraw,  // CCamera = 4
+      ShouldNothing,        // CTerrain = 5
   };
 };
 

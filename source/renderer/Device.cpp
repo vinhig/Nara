@@ -52,12 +52,18 @@ void Device<T>::SetClearArgs(struct ClearArgs args) {
 
 template <typename T>
 uint32_t Device<T>::CreateIbo(unsigned int *data, size_t length) {
+  if (!length) {
+    throw std::runtime_error("Size of a buffer has to be positive.");
+  }
   auto buffer = this->gl->CreateBuffer(data, length * sizeof(unsigned int));
   return buffer;
 }
 
 template <typename T>
 uint32_t Device<T>::CreateUbo(void *data, size_t size) {
+  if (!size) {
+    throw std::runtime_error("Size of a buffer has to be positive.");
+  }
   auto buffer = this->gl->CreateBuffer(data, size);
   return buffer;
 }

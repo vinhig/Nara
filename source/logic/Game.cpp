@@ -18,6 +18,7 @@
 #include "CCamera.h"
 #include "CMaterial.h"
 #include "CMeshInstance.h"
+#include "CTerrain.h"
 #include "UpdateRegister.h"
 
 template <class T>
@@ -97,6 +98,13 @@ void Game<T>::Run() {
 
   Entity *camera = new Entity(this->world);
 
+  Entity *terrain = new Entity(this->world);
+
+  // CTerrain *terrainCTerrain = terrain->GetOrCreate<CTerrain>();
+  // terrainCTerrain->width = 10;
+  // terrainCTerrain->height = 10;
+  // terrainCTerrain->precision = 2;
+
   CCamera *cameraCCamera = camera->GetOrCreate<CCamera>();
 
   // Prepare something to load our mesh and textures
@@ -114,9 +122,9 @@ void Game<T>::Run() {
   // Populate our entity with a visual component
   CMaterial *sphereCMaterial = sphere->GetOrCreate<CMaterial>();
   CMaterial *monkeyCMaterial = monkey->GetOrCreate<CMaterial>();
-  sphereCMaterial->diffusePath = "assets/textures/doc.png";
+  sphereCMaterial->diffusePath = "assets/textures/test.png";
   monkeyCMaterial->diffusePath = "assets/textures/doc.png";
-  sphereCMaterial->normalPath = "assets/textures/doc.png";
+  sphereCMaterial->normalPath = "assets/textures/test.png";
   monkeyCMaterial->normalPath = "assets/textures/doc.png";
   sphereCMaterial->loader = textureLoader;
   monkeyCMaterial->loader = textureLoader;
@@ -130,6 +138,7 @@ void Game<T>::Run() {
   monkeyCMesh->Initialize<Device<T>>(this->device);
   sphereCMaterial->Initialize<Device<T>>(this->device);
   monkeyCMaterial->Initialize<Device<T>>(this->device);
+  // terrainCTerrain->Initialize<Device<T>>(this->device);
 
   // Spawn std::thread::hardware_concurrency() - 2 threads
   // Keep a master thread and a drawing thread
@@ -154,7 +163,7 @@ void Game<T>::Run() {
 
   float moove = 0.0f;
   while (this->device->IsOpen()) {
-    this->device->SetClearArgs({0, {1.0f, 0.0f, 1.0f, 1.0f}, true, true});
+    this->device->SetClearArgs({0, {0.9f, 0.9f, 0.9f, 1.0f}, true, true});
     this->device->Clear();
 
     // delete frames[currentFrame % 2];
@@ -209,7 +218,7 @@ void Game<T>::Run() {
                   (float)sin(moove / 30.0f) * 2.0f));
 
     moove += 2.0f;
-    
+
     currentFrame->SetProgramSingle(basicProgram);
     currentFrame->SetProgramInstanced(ibasicProgram);
     // Some work on the frame

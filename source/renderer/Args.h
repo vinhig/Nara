@@ -58,6 +58,13 @@ struct InputLayoutArgs {
 enum TextureFormat {
   RGB = GL_RGB,
   RGBA = GL_RGBA,
+  DEPTH = GL_DEPTH_COMPONENT,
+};
+
+enum InternalFormat {
+  RGB8 = GL_RGB8,
+  RGBA8 = GL_RGBA8,
+  DEPTH24 = GL_DEPTH_COMPONENT24,
 };
 
 struct TextureSpec {
@@ -72,6 +79,20 @@ struct MeshSpec {
   unsigned int* indices;
   int verticesCount;
   int indicesCount;
+};
+
+struct RenderTargetArgs {
+  int width, height;
+  bool color, depth;
+  bool clearColor, clearDepth;
+};
+
+struct RenderTarget {
+  uint32_t framebuffer;
+  uint32_t colorTexture;
+  uint32_t depthTexture;
+  int width, height;
+  bool clearColor, clearDepth;
 };
 
 #endif  // NARA_SOURCE_RENDERER_ARGS_H_

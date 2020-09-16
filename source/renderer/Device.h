@@ -27,12 +27,15 @@ class Device {
   int Height() { return this->gl->Height(); };
 
   // Device method ACT
+  void BlitOnScreen(RenderTarget from);
+  void BlitRenderTarget(RenderTarget from, RenderTarget to);
   void Clear();
   uint32_t CreateIbo(unsigned int *data, size_t length);
   uint32_t CreateUbo(void *data, size_t size);
   uint32_t CreateVao(InputLayoutArgs inputLayout);
   uint32_t CreateVbo(float *data, size_t length);
   uint32_t CreateProgram(std::string name);
+  RenderTarget CreateRenderTarget(RenderTargetArgs renderTargetDesc);
   uint32_t CreateTexture(TextureSpec textureSpec);
   /**
    * Erase previous frame and init new one.

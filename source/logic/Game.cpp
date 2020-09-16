@@ -15,6 +15,7 @@
 #include "../common/Macros.h"
 #include "../loader/DefaultTextureLoader.h"
 #include "../loader/FbxMeshLoader.h"
+#include "../renderer/RenderGraph.h"
 #include "CCamera.h"
 #include "CMaterial.h"
 #include "CMeshInstance.h"
@@ -83,9 +84,6 @@ void Game<T>::Work(int workerID) {
 
 template <class T>
 void Game<T>::Run() {
-  uint32_t basicProgram = this->device->CreateProgram("assets/shaders/basic");
-  uint32_t ibasicProgram = this->device->CreateProgram("assets/shaders/ibasic");
-
   size_t vertexStride = sizeof(float) * 8;
 
   this->world = new System();
@@ -121,12 +119,16 @@ void Game<T>::Run() {
   // Populate our entity with a visual component
   CMaterial *sphereCMaterial = sphere->GetOrCreate<CMaterial>();
   CMaterial *monkeyCMaterial = monkey->GetOrCreate<CMaterial>();
+  CMaterial *terrainCMaterial = terrain->GetOrCreate<CMaterial>();
   sphereCMaterial->diffusePath = "assets/textures/test.png";
   monkeyCMaterial->diffusePath = "assets/textures/doc.png";
-  sphereCMaterial->normalPath = "assets/textures/test.png";
-  monkeyCMaterial->normalPath = "assets/textures/doc.png";
+  terrainCMaterial->diffusePath = "assets/textures/light-code.png";
+  sphereCMaterial->normalPath = "assets/textures/doc.png";
+  monkeyCMaterial->normalPath = "assets/textures/test.png";
+  terrainCMaterial->normalPath = "assets/textures/light-code.png";
   sphereCMaterial->loader = textureLoader;
   monkeyCMaterial->loader = textureLoader;
+  terrainCMaterial->loader = textureLoader;
 
   // Launch init step
   this->world->Initialize();
@@ -137,12 +139,17 @@ void Game<T>::Run() {
   monkeyCMesh->Initialize<Device<T>>(this->device);
   sphereCMaterial->Initialize<Device<T>>(this->device);
   monkeyCMaterial->Initialize<Device<T>>(this->device);
+  terrainCMaterial->Initialize<Device<T>>(this->device);
   terrainCTerrain->Initialize<Device<T>>(this->device);
+
+  // Initialize render graph
+  RenderGraph *renderGraph = new RenderGraph();
+  renderGraph->Initialize<Device<T>>(this->device);
 
   // Spawn std::thread::hardware_concurrency() - 2 threads
   // Keep a master thread and a drawing thread
   // TODO: make exception when there are only two or less threads.
-  std::cout << std::thread::hardware_concurrency() << std::endl;
+  // std::cout << std::thread::hardware_concurrency() << std::endl;
   // Master thread
   workers.push_back(std::thread([this]() {
     while (this->running) {
@@ -169,47 +176,58 @@ void Game<T>::Run() {
     // frames[currentFrame % 2] = this->device->SpawnFrame();
     // this->device->EatFrame(frames[currentFrame % 2]);
     // currentFrame++;
-
-    Frame *currentFrame = this->device->SpawnFrame();
-
+    // Push game state to GPU
     for (auto it = this->world->components.begin();
          it != this->world->components.end(); ++it) {
       if (UpdateRegister::ComponentType[it->first] == ShouldDraw ||
           UpdateRegister::ComponentType[it->first] == ShouldUpdateAndDraw) {
         for (int i = 0; i < it->second.size(); i++) {
-          DrawCall call;
           if (it->second[i]->m_UUID() == 2) {
             ((CMeshInstance *)it->second[i])->Upload(this->device);
-            call = ((CMeshInstance *)it->second[i])->Draw();
           } else if (it->second[i]->m_UUID() == 1) {
             ((CTransform *)it->second[i])->Upload(this->device);
-            call = ((CTransform *)it->second[i])->Draw();
           } else if (it->second[i]->m_UUID() == 4) {
             ((CCamera *)it->second[i])->Upload(this->device);
-            call = ((CCamera *)it->second[i])->Draw();
-          }else if (it->second[i]->m_UUID() == 5) {
+          } else if (it->second[i]->m_UUID() == 5) {
             ((CTerrain *)it->second[i])->Upload(this->device);
-            call = ((CTerrain *)it->second[i])->Draw();
-          }
-
-          switch (call.subtype) {
-            case DrawCallType::NoneDrawCall:
-              break;
-            case DrawCallType::SingleDrawCall: {
-              currentFrame->AddDCSingle(call.single);
-              break;
-            }
-            case DrawCallType::InstancedDrawCall: {
-              currentFrame->AddDCInstanced(call.instanced);
-              break;
-            }
-
-            default:
-              break;
           }
         }
       }
     }
+
+    // Feed render graph with frames
+    for (auto it = this->world->components.begin();
+         it != this->world->components.end(); ++it) {
+      for (int i = 0; i < it->second.size(); i++) {
+        DrawCall call;
+        call.subtype = DrawCallType::NoneDrawCall;
+        if (it->second[i]->m_UUID() == 2) {
+          call = ((CMeshInstance *)it->second[i])->Draw();
+        } else if (it->second[i]->m_UUID() == 1) {
+          call = ((CTransform *)it->second[i])->Draw();
+        } else if (it->second[i]->m_UUID() == 4) {
+          call = ((CCamera *)it->second[i])->Draw();
+        } else if (it->second[i]->m_UUID() == 5) {
+          call = ((CTerrain *)it->second[i])->Draw();
+        }
+
+        switch (call.subtype) {
+          case DrawCallType::NoneDrawCall:
+            break;
+          case DrawCallType::SingleDrawCall: {
+            renderGraph->singleCalls.push_back(call.single);
+          } break;
+          case DrawCallType::InstancedDrawCall: {
+            renderGraph->instancedCalls.push_back(call.instanced);
+            break;
+          }
+          default:
+            break;
+        }
+      }
+    }
+
+    renderGraph->Draw<Device<T>>(this->device);
 
     monkey->GetOrCreate<CTransform>()->SetRotation(
         glm::vec3(moove, 0.0f, moove));
@@ -220,10 +238,10 @@ void Game<T>::Run() {
 
     moove += 2.0f;
 
-    currentFrame->SetProgramSingle(basicProgram);
+    /*currentFrame->SetProgramSingle(basicProgram);
     currentFrame->SetProgramInstanced(ibasicProgram);
     // Some work on the frame
-    this->device->EatFrame(currentFrame);
+    this->device->EatFrame(currentFrame);*/
 
     this->device->Swap();
     this->device->PollEvents();

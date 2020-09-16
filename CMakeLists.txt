@@ -46,6 +46,8 @@ add_library(renderer
     source/renderer/BackendOgl.cpp source/renderer/BackendOgl.h
     source/renderer/Device.cpp source/renderer/Device.h
     source/renderer/Frame.cpp source/renderer/Frame.h
+    source/renderer/Settings.cpp source/renderer/Settings.h
+    source/renderer/RenderGraph.h source/renderer/RenderGraph.cpp
 )
 
 add_executable(Nara

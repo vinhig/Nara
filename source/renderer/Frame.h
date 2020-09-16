@@ -6,8 +6,14 @@
 #define NARA_SOURCE_RENDERER_FRAME_H_
 
 #include "../common/Array.h"
+#include "Args.h"
 
 // DC stand for draw call
+
+enum RenderTag {
+  Level1 = 0,  // Just visible
+  Level2 = 1,  // Visible and cast shadow
+};
 
 /**
  * Dummy draw call referencing :
@@ -21,9 +27,9 @@ struct DCSingle {
   Array<uint32_t>* textures;
   Array<uint32_t>* uniforms;
   int count;
+  RenderTag level;
   // TODO next boring stuff
 };
-typedef struct DCSingle DCSingle;
 
 /**
  * Advanced draw call referencing :
@@ -36,7 +42,6 @@ struct DCInstanced {
   DCSingle target;
   int primcount;
 };
-typedef struct DCInstanced DCInstanced;
 
 enum DrawCallType {
   InstancedDrawCall,
@@ -62,13 +67,17 @@ class Frame {
   uint32_t programSingle;
   uint32_t programInstanced;
 
+  RenderTarget renderTarget;
+
  public:
   Frame();
   ~Frame();
 
   // Draw calls
-  Array<DCSingle> singleDrawCalls;
-  Array<DCInstanced> instancedDrawCalls;
+  DCSingle* singleDrawCalls;
+  size_t singleDrawCallsCount;
+  DCInstanced* instancedDrawCalls;
+  size_t instancedDrawCallsCount;
 
   // Manipulate draw calls
   /**
@@ -84,11 +93,15 @@ class Frame {
   void SetProgramInstanced(uint32_t program) {
     this->programInstanced = program;
   }
+  void SetRenderTarget(RenderTarget renderTarget) {
+    this->renderTarget = renderTarget;
+  };
   uint32_t GetProgramSingle() { return this->programSingle; }
   uint32_t GetProgramInstanced() { return this->programInstanced; }
+  RenderTarget GetRenderTarget() { return this->renderTarget; }
 
-  void AddDCSingle(DCSingle singleDrawCall);
-  void AddDCInstanced(DCInstanced instancedDrawCall);
+  // void AddDCSingle(DCSingle singleDrawCall);
+  // void AddDCInstanced(DCInstanced instancedDrawCall);
 };
 
 #endif  // NARA_SOURCE_RENDERER_FRAME_H_

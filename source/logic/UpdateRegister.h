@@ -20,7 +20,7 @@ class UpdateRegister {
       ShouldDraw,           // CMeshInstance = 2
       ShouldNothing,        // CMaterial = 3
       ShouldUpdateAndDraw,  // CCamera = 4
-      ShouldDraw,        // CTerrain = 5
+      ShouldDraw,           // CTerrain = 5
   };
 };
 

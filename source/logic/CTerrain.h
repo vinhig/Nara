@@ -9,6 +9,7 @@
 
 #include "../renderer/Args.h"
 #include "../renderer/Frame.h"
+#include "CMaterial.h"
 #include "CTransform.h"
 #include "Ecs.h"
 
@@ -21,6 +22,7 @@ class CTerrain : public IComponent {
   int count;
 
   CTransform* transform;
+  CMaterial* material;
 
  public:
   int width, precision;
@@ -54,7 +56,7 @@ class CTerrain : public IComponent {
 
     for (float w = -wh; w <= wh; w += ws) {
       for (float h = -wh; h <= wh; h += ws) {
-        std::cout << "Adding {" << w << ", 0.0, " << h << "}" << std::endl;
+        // std::cout << "Adding {" << w << ", 0.0, " << h << "}" << std::endl;
         vertices.push_back(w);
         vertices.push_back(-1.0);
         vertices.push_back(h);
@@ -64,7 +66,7 @@ class CTerrain : public IComponent {
         vertices.push_back(0.0);
 
         vertices.push_back(1 - (w + wh) / (float)width);
-        vertices.push_back(1 - (h + wh) / (float)width);
+        vertices.push_back(/*1 -*/ (h + wh) / (float)width);
       }
       nbLine++;
     }

@@ -3,9 +3,11 @@
 #include "common/Array.h"
 #include "logic/Game.h"
 #include "renderer/Device.h"
+#include "renderer/Settings.h"
 
 template <class B>
 void Launch() {
+  Settings::Initialize();
   auto *my_game = new Game<B>();
   auto *device = new Device<B>();
   if (device->InitBackend()) {

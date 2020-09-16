@@ -9,6 +9,8 @@
 #include <glm/common.hpp>
 #include <glm/gtx/transform.hpp>
 
+#include "../renderer/Settings.h"
+
 void CCamera::Initialize() {
   std::cout << "INITIATING CCamera" << std::endl;
   // Default
@@ -18,8 +20,9 @@ void CCamera::Initialize() {
 
   this->view =
       glm::lookAt(this->position, this->lookAt, glm::vec3(0.0f, 1.0f, 0.0f));
-  this->projection = glm::perspective((float)glm::radians(this->fov),
-                                      1024.0f / 768.0f, 0.1f, 100.0f);
+  this->projection = glm::perspective(
+      (float)glm::radians(this->fov),
+      (float)Settings::width / (float)Settings::height, 0.1f, 100.0f);
   memcpy(&uniform.projection[0], &this->projection[0][0], 16 * sizeof(float));
   memcpy(&uniform.view[0], &this->view[0][0], 16 * sizeof(float));
   this->SetActive(true);
@@ -30,8 +33,9 @@ void CCamera::Update() {
     this->vectorUpdate.lock();
     this->view =
         glm::lookAt(this->position, this->lookAt, glm::vec3(0.0f, 1.0f, 0.0f));
-    this->projection = glm::perspective((float)glm::radians(this->fov),
-                                        1024.0f / 768.0f, 0.1f, 100.0f);
+    this->projection = glm::perspective(
+        (float)glm::radians(this->fov),
+        (float)Settings::width / (float)Settings::height, 0.1f, 100.0f);
 
     memcpy(&this->uniform.projection[0], &this->projection[0][0],
            16 * sizeof(float));

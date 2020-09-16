@@ -31,21 +31,28 @@ class BackendOgl : public Backend {
   ~BackendOgl();
 
   // API methods
+  void BlitRenderTarget(uint32_t from, uint32_t to, int srcX0, int srcY0,
+                        int srcX1, int srcY1, int dstX0, int dstY0, int dstX1,
+                        int dstY1) override;
   uint32_t CreateBuffer(void *data, size_t size) override;
   void ClearColor(float red, float green, float blue, float alpha) override;
   void Clear(bool color_buffer, bool depth_buffer) override;
   uint32_t CreateVao(InputLayoutArgs inputLayout) override;
   uint32_t CreateProgram(std::string vertexShader,
                          std::string fragmentShader) override;
+  uint32_t CreateRenderTarget(uint32_t colorTexture,
+                              uint32_t depthTexture) override;
+  uint32_t CreateTexture(int width, int height,
+                         InternalFormat internalFormat) override;
   uint32_t CreateTexture(TextureSpec textureSpec) override;
   void DrawSingle(uint32_t vao, uint32_t ibo, Array<uint32_t> *textures,
                   Array<uint32_t> *uniforms, int count) override;
   void DrawInstanced(uint32_t vao, uint32_t ibo, Array<uint32_t> *textures,
                      Array<uint32_t> *uniforms, int count,
                      int primcount) override;
-  void FeedTexture(unsigned char *data) override;
   void UpdateBuffer(uint32_t buffer, void *data, size_t size) override;
   void UseProgram(uint32_t program) override;
+  void UseRenderTarget(RenderTarget renderTarget) override;
 
   // Device methods
   int Height() override { return this->height; };
@@ -63,11 +70,11 @@ class BackendOgl : public Backend {
                                          GLenum severity, GLsizei length,
                                          const GLchar *message,
                                          const void *userParam) {
-    fprintf(stderr,
-            "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-            (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type,
-            severity, message);
     if (type == GL_DEBUG_TYPE_ERROR) {
+      fprintf(stderr,
+              "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+              (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type,
+              severity, message);
       throw std::runtime_error("An OpenGL occured. See logs above.");
     }
   }

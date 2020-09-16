@@ -4,6 +4,8 @@
 
 #include "Device.h"
 
+#include "Settings.h"
+
 template <typename T>
 Device<T>::Device() = default;
 
@@ -34,6 +36,18 @@ bool Device<T>::IsSuitable() {
 template <typename T>
 void Device<T>::PollEvents() {
   glfwPollEvents();
+}
+
+template <typename T>
+void Device<T>::BlitOnScreen(RenderTarget from) {
+  this->gl->BlitRenderTarget(from.framebuffer, 0, 0, 0, from.width, from.height,
+                             0, 0, Settings::width, Settings::height);
+}
+
+template <typename T>
+void Device<T>::BlitRenderTarget(RenderTarget from, RenderTarget to) {
+  this->gl->BlitRenderTarget(from.framebuffer, to.framebuffer, 0, 0, from.width,
+                             from.height, 0, 0, to.width, to.height);
 }
 
 template <typename T>
@@ -91,6 +105,35 @@ uint32_t Device<T>::CreateProgram(std::string name) {
 };
 
 template <typename T>
+RenderTarget Device<T>::CreateRenderTarget(RenderTargetArgs renderTargetDesc) {
+  if (!renderTargetDesc.color && !renderTargetDesc.depth) {
+    throw std::runtime_error("A render target cannot render to 0 textures.");
+  }
+
+  uint32_t colorTexture = 0;
+  if (renderTargetDesc.color) {
+    colorTexture = this->gl->CreateTexture(
+        renderTargetDesc.width, renderTargetDesc.height, InternalFormat::RGB8);
+  }
+  uint32_t depthTexture = 0;
+  if (renderTargetDesc.depth) {
+    depthTexture =
+        this->gl->CreateTexture(renderTargetDesc.width, renderTargetDesc.height,
+                                InternalFormat::DEPTH24);
+  }
+
+  uint32_t fbo = this->gl->CreateRenderTarget(colorTexture, depthTexture);
+
+  return {fbo,
+          colorTexture,
+          depthTexture,
+          renderTargetDesc.width,
+          renderTargetDesc.height,
+          renderTargetDesc.clearColor,
+          renderTargetDesc.clearDepth};
+}
+
+template <typename T>
 uint32_t Device<T>::CreateTexture(TextureSpec textureSpec) {
   return this->gl->CreateTexture(textureSpec);
 }
@@ -112,9 +155,10 @@ void Device<T>::UpdateUbo(uint32_t buffer, void *data, size_t size) {
 
 template <typename T>
 void Device<T>::EatFrame(Frame *frame) {
+  this->gl->UseRenderTarget(frame->GetRenderTarget());
   this->gl->UseProgram(frame->GetProgramSingle());
   uint32_t previousUniformBuffer = 0;
-  for (size_t i = 0; i < frame->singleDrawCalls.Count(); i++) {
+  for (size_t i = 0; i < frame->singleDrawCallsCount; i++) {
     auto drawCall = frame->singleDrawCalls[i];
     if (drawCall.vao == 0) {
       throw std::runtime_error("Suspect vao to be illformed.");
@@ -127,7 +171,7 @@ void Device<T>::EatFrame(Frame *frame) {
   }
 
   this->gl->UseProgram(frame->GetProgramInstanced());
-  for (size_t i = 0; i < frame->instancedDrawCalls.Count(); i++) {
+  for (size_t i = 0; i < frame->instancedDrawCallsCount; i++) {
     auto drawCall = frame->instancedDrawCalls[i];
     this->gl->DrawInstanced(drawCall.target.vao, drawCall.target.ibo,
                             drawCall.target.textures, drawCall.target.uniforms,

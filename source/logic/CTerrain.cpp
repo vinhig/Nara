@@ -11,6 +11,9 @@ void CTerrain::Initialize() {
   // Need a transform
   this->transform = this->entity->GetOrCreate<CTransform>();
   this->transform->Initialize();
+
+  // Need a material
+  this->material = this->entity->GetOrCreate<CMaterial>();
 }
 
 DrawCall CTerrain::Draw() {
@@ -23,7 +26,6 @@ DrawCall CTerrain::Draw() {
   actualCall.vao = this->vao;
   actualCall.ibo = this->ibo;
   actualCall.uniforms = new Array<uint32_t>(2);
-  actualCall.textures = new Array<uint32_t>(0);
   actualCall.count = this->count;
 
   // Fetch information for the uniform buffer
@@ -33,6 +35,8 @@ DrawCall CTerrain::Draw() {
                                ->Uniform());
 
   actualCall.uniforms->Add(this->transform->Uniform());
+
+  actualCall.textures = this->material->Textures() /*new Array<uint32_t>(0)*/;
 
   // Feed the union
   call.single = actualCall;

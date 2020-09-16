@@ -42,7 +42,6 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
   // TODO: uncomment last lines to allow multiple mesh
   for (int i = 0; i < meshCount; i++) {
     auto currentMesh = scene->getMesh(i);
-    std::cout << currentMesh->name << std::endl;
     // Alloc space to copy vertices
     int verticesCount = currentMesh->getGeometry()->getVertexCount();
     float* subVerticesBuffer =

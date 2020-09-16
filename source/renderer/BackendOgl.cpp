@@ -4,6 +4,8 @@
 
 #include "BackendOgl.h"
 
+#include "Settings.h"
+
 // Constructor
 
 BackendOgl::BackendOgl() = default;
@@ -11,6 +13,14 @@ BackendOgl::BackendOgl() = default;
 BackendOgl::~BackendOgl() = default;
 
 // API methods
+
+void BackendOgl::BlitRenderTarget(uint32_t from, uint32_t to, int srcX0,
+                                  int srcY0, int srcX1, int srcY1, int dstX0,
+                                  int dstY0, int dstX1, int dstY1) {
+  glBlitNamedFramebuffer(from, to, srcX0, srcY0, srcX1, srcY1, dstX0, dstY0,
+                         dstX1, dstY1,
+                         GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+}
 
 uint32_t BackendOgl::CreateBuffer(void *data, size_t size) {
   uint32_t buffer;
@@ -91,6 +101,32 @@ uint32_t BackendOgl::CreateProgram(std::string vertexShaderPath,
   glDeleteShader(fragmentShader);
 
   return program;
+}
+
+uint32_t BackendOgl::CreateRenderTarget(uint32_t colorTexture,
+                                        uint32_t depthTexture) {
+  uint32_t fbo = 0;
+  glCreateFramebuffers(1, &fbo);
+  if (colorTexture) {
+    glNamedFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0, colorTexture, 0);
+  }
+
+  if (depthTexture) {
+    glNamedFramebufferTexture(fbo, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+  }
+
+  return fbo;
+}
+
+uint32_t BackendOgl::CreateTexture(int width, int height,
+                                   InternalFormat internalFormat) {
+  uint32_t texture;
+  glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+  glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTextureStorage2D(texture, 1, internalFormat, width, height);
+
+  return texture;
 }
 
 uint32_t BackendOgl::CreateTexture(TextureSpec textureSpec) {
@@ -178,13 +214,16 @@ void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
                           primcount);
 }
 
-void BackendOgl::FeedTexture(unsigned char *data) {}
-
 void BackendOgl::UpdateBuffer(uint32_t buffer, void *data, size_t size) {
   glNamedBufferSubData(buffer, 0, size, data);
 }
 
 void BackendOgl::UseProgram(uint32_t program) { glUseProgram(program); }
+
+void BackendOgl::UseRenderTarget(RenderTarget renderTarget) {
+  glBindFramebuffer(GL_FRAMEBUFFER, renderTarget.framebuffer);
+  glViewport(0, 0, renderTarget.width, renderTarget.height);
+}
 
 // Device methods
 
@@ -197,9 +236,10 @@ void BackendOgl::Init() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 
-  this->window = glfwCreateWindow(1024, 768, "Nara Opengl 4.6", NULL, NULL);
-  this->width = 1024;
-  this->height = 768;
+  this->window = glfwCreateWindow(Settings::width, Settings::height,
+                                  "Nara Opengl 4.6", NULL, NULL);
+  this->width = Settings::width;
+  this->height = Settings::height;
   if (!this->window) {
     // throw std::runtime_error("Unable to create a window.");
     // Don't interrupt

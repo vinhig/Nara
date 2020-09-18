@@ -155,8 +155,13 @@ void Device<T>::UpdateUbo(uint32_t buffer, void *data, size_t size) {
 
 template <typename T>
 void Device<T>::EatFrame(Frame *frame) {
+  // Where to draw
   this->gl->UseRenderTarget(frame->GetRenderTarget());
+  // How to draw
   this->gl->UseProgram(frame->GetProgramSingle());
+  // Tools to draw
+  this->gl->UseUniform(frame->GetPointOfView());
+
   uint32_t previousUniformBuffer = 0;
   for (size_t i = 0; i < frame->singleDrawCallsCount; i++) {
     auto drawCall = frame->singleDrawCalls[i];

@@ -25,14 +25,14 @@ DrawCall CTerrain::Draw() {
   // Fetch information for this mesh
   actualCall.vao = this->vao;
   actualCall.ibo = this->ibo;
-  actualCall.uniforms = new Array<uint32_t>(2);
+  actualCall.uniforms = new Array<uint32_t>(1);
   actualCall.count = this->count;
 
   // Fetch information for the uniform buffer
   // From CTransform
-  actualCall.uniforms->Add(this->entity->CorrespondingSystem()
+  /*actualCall.uniforms->Add(this->entity->CorrespondingSystem()
                                ->GetFirstActive<CCamera>()
-                               ->Uniform());
+                               ->Uniform());*/
 
   actualCall.uniforms->Add(this->transform->Uniform());
 

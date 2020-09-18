@@ -53,6 +53,7 @@ class BackendOgl : public Backend {
   void UpdateBuffer(uint32_t buffer, void *data, size_t size) override;
   void UseProgram(uint32_t program) override;
   void UseRenderTarget(RenderTarget renderTarget) override;
+  void UseUniform(uint32_t uniform) override;
 
   // Device methods
   int Height() override { return this->height; };

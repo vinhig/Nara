@@ -227,6 +227,9 @@ void Game<T>::Run() {
       }
     }
 
+    // Find the first active camera
+    renderGraph->SetPointOfView(
+        this->world->GetFirstActive<CCamera>()->Uniform());
     renderGraph->Draw<Device<T>>(this->device);
 
     monkey->GetOrCreate<CTransform>()->SetRotation(

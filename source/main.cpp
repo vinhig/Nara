@@ -11,7 +11,7 @@ void Launch() {
   auto *my_game = new Game<B>();
   auto *device = new Device<B>();
   if (device->InitBackend()) {
-    std::string version = "B.Name()";
+    std::string version = "B::Name()";
     std::cout << "Unable to create an " << version << " context." << std::endl;
     delete device;
     throw std::runtime_error("Unable to create a graphics device.");

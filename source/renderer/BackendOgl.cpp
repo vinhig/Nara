@@ -175,7 +175,7 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
     if (uniforms->Get(i) == 0) {
       throw std::runtime_error("Null uniform buffer.");
     }
-    glBindBufferBase(GL_UNIFORM_BUFFER, i, uniforms->Get(i));
+    glBindBufferBase(GL_UNIFORM_BUFFER, i + 1, uniforms->Get(i));
   }
 
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
@@ -207,7 +207,7 @@ void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
     if (uniforms->Get(i) == 0) {
       throw std::runtime_error("Null uniform buffer.");
     }
-    glBindBufferBase(GL_UNIFORM_BUFFER, i, uniforms->Get(i));
+    glBindBufferBase(GL_UNIFORM_BUFFER, i + 1, uniforms->Get(i));
   }
 
   glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr,
@@ -223,6 +223,10 @@ void BackendOgl::UseProgram(uint32_t program) { glUseProgram(program); }
 void BackendOgl::UseRenderTarget(RenderTarget renderTarget) {
   glBindFramebuffer(GL_FRAMEBUFFER, renderTarget.framebuffer);
   glViewport(0, 0, renderTarget.width, renderTarget.height);
+}
+
+void BackendOgl::UseUniform(uint32_t uniform) {
+  glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniform);
 }
 
 // Device methods

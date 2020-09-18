@@ -44,6 +44,7 @@ class Backend {
   virtual void UpdateBuffer(uint32_t buffer, void* data, size_t size) = 0;
   virtual void UseProgram(uint32_t program) = 0;
   virtual void UseRenderTarget(RenderTarget renderTarget) = 0;
+  virtual void UseUniform(uint32_t uniform) = 0;
 
   // Device methods
   virtual int Height() = 0;

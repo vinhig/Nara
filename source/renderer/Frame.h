@@ -5,6 +5,8 @@
 #ifndef NARA_SOURCE_RENDERER_FRAME_H_
 #define NARA_SOURCE_RENDERER_FRAME_H_
 
+#include <vector>
+
 #include "../common/Array.h"
 #include "Args.h"
 
@@ -63,9 +65,12 @@ struct DrawCall {
 class Frame {
  private:
   // Corresponding program to bind
-  // for single draw call
   uint32_t programSingle;
   uint32_t programInstanced;
+
+  // Bindless ressources
+  uint32_t pointOfView;
+  std::vector<uint32_t> textures;
 
   RenderTarget renderTarget;
 
@@ -89,16 +94,25 @@ class Frame {
    */
   void QueueSyncJob();
 
-  void SetProgramSingle(uint32_t program) { this->programSingle = program; }
+  uint32_t GetPointOfView() { return this->pointOfView; };
+  uint32_t GetProgramSingle() { return this->programSingle; }
+  uint32_t GetProgramInstanced() { return this->programInstanced; }
+  RenderTarget GetRenderTarget() { return this->renderTarget; }
+
+  void SetProgramSingle(uint32_t program) {
+    // Set
+    this->programSingle = program;
+  }
   void SetProgramInstanced(uint32_t program) {
     this->programInstanced = program;
+  }
+  void SetPointOfView(uint32_t pointOfView) {
+    // Here, a pointOfView may be a Camera or a Light
+    this->pointOfView = pointOfView;
   }
   void SetRenderTarget(RenderTarget renderTarget) {
     this->renderTarget = renderTarget;
   };
-  uint32_t GetProgramSingle() { return this->programSingle; }
-  uint32_t GetProgramInstanced() { return this->programInstanced; }
-  RenderTarget GetRenderTarget() { return this->renderTarget; }
 
   // void AddDCSingle(DCSingle singleDrawCall);
   // void AddDCInstanced(DCInstanced instancedDrawCall);

@@ -37,9 +37,15 @@ class RenderGraph {
    */
   RenderTarget distortionPass;
 
+  // Shaders
   uint32_t basicProgram;
   uint32_t ibasicProgram;
   uint32_t depthProgram;
+
+  // Uniform buffers
+  // Set from Game state
+  uint32_t pointOfView;
+  std::vector<uint32_t> lightsOfView;
 
  public:
   std::vector<DCSingle> singleCalls;
@@ -69,6 +75,8 @@ class RenderGraph {
     // Compose and eat frame
     Frame* depthFrame = device->SpawnFrame();
 
+    depthFrame->SetPointOfView(this->pointOfView);
+
     depthFrame->singleDrawCalls = this->singleCalls.data();
     depthFrame->singleDrawCallsCount = this->singleCalls.size();
     depthFrame->instancedDrawCalls = this->instancedCalls.data();
@@ -82,6 +90,8 @@ class RenderGraph {
     device->EatFrame(depthFrame);
 
     Frame* diffuseFrame = device->SpawnFrame();
+
+    diffuseFrame->SetPointOfView(this->pointOfView);
 
     diffuseFrame->singleDrawCalls = this->singleCalls.data();
     diffuseFrame->singleDrawCallsCount = this->singleCalls.size();
@@ -99,6 +109,13 @@ class RenderGraph {
 
     singleCalls.clear();
     instancedCalls.clear();
+  }
+
+  void SetPointOfView(uint32_t ubo) {
+    if (!ubo || ubo > 100) {
+      throw std::runtime_error("Suspect uniform buffer object.");
+    }
+    this->pointOfView = ubo;
   }
 };
 

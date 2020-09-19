@@ -1,6 +1,6 @@
 # Nara
 
-Nara was a failed attempt to great a little rendering engine. Why *attempt*? Simply because it used many things I had always wanted to try. Why *failed*? Failed isn't the good word actually, it's just that I need to learn 300% more things before creating something big and good.
+Nara was a failed attempt to great a little rendering engine. Why *attempt*? Simply because it uses many things I had always wanted to try. Why *failed*? Failed isn't the good word actually, it's just that I need to learn 300% more things before creating something big and good.
 
 ## Characteristics
 
@@ -15,6 +15,25 @@ Nara was a failed attempt to great a little rendering engine. Why *attempt*? Sim
 * Custom unit testing (not enough )
 
 It doesn't feature any advanced rendering technics but a simple deferred rendering pipeline that just works.
+
+## Building
+
+Sadly, this project just works on Linux as it uses some non-portable components. You'll need to fetch those dependencies:
+
+* GLFW
+* GLEW
+* GLM
+
+Then:
+
+```
+git clone https://github.com/vinhig/Nara
+cd Nara
+git submodule init
+git submodule update
+sh source/tools/build.sh
+./build/Nara
+```
 
 ## Extern Libraries
 

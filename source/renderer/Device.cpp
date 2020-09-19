@@ -106,14 +106,16 @@ uint32_t Device<T>::CreateProgram(std::string name) {
 
 template <typename T>
 RenderTarget Device<T>::CreateRenderTarget(RenderTargetArgs renderTargetDesc) {
-  if (!renderTargetDesc.color && !renderTargetDesc.depth) {
+  if (!renderTargetDesc.nbColors && !renderTargetDesc.depth) {
     throw std::runtime_error("A render target cannot render to 0 textures.");
   }
 
   std::vector<uint32_t> colorTexture;
-  for (int i = 0; i < renderTargetDesc.color; i++) {
-    colorTexture.push_back(this->gl->CreateTexture(
-        renderTargetDesc.width, renderTargetDesc.height, InternalFormat::RGB8));
+  for (int i = 0; i < renderTargetDesc.nbColors; i++) {
+    std::cout << "\tCreating texture" << std::endl;
+    colorTexture.push_back(
+        this->gl->CreateTexture(renderTargetDesc.width, renderTargetDesc.height,
+                                renderTargetDesc.formats.value()[i]));
   }
 
   uint32_t depthTexture = 0;
@@ -169,7 +171,7 @@ void Device<T>::EatFrame(Frame *frame) {
   // Global textures to use
   this->gl->UseTextures(frame->GetTextures());
 
-  int bindingOffset[2] = {frame->GetTextures().size(), 1};
+  int bindingOffset[2] = {(int)frame->GetTextures().size(), 1};
 
   uint32_t previousUniformBuffer = 0;
   for (size_t i = 0; i < frame->singleDrawCallsCount; i++) {

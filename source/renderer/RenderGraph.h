@@ -6,6 +6,7 @@
 #define NARA_SOURCE_RENDERER_RENDERGRAPH_H_
 
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "Args.h"
@@ -66,13 +67,32 @@ class RenderGraph {
     instancedCalls.reserve(128);
 
     // Create a render target for each render target
-    this->depthPrepass = device->CreateRenderTarget(
-        {Settings::width, Settings::height, false, true, false, true});
-    this->globalPrepass = device->CreateRenderTarget(
-        {Settings::width, Settings::height, 2, true, false, true});
+    std::cout << "Depth prepass creation" << std::endl;
+    this->depthPrepass =
+        device->CreateRenderTarget({Settings::width, Settings::height, false,
+                                    std::nullopt, true, false, true});
+    std::vector<InternalFormat> globalColorBufferFormats;
+    globalColorBufferFormats.push_back(InternalFormat::RGB8);  // Normal
+    globalColorBufferFormats.push_back(InternalFormat::RGB8);  // Position
+    globalColorBufferFormats.push_back(InternalFormat::R8);    // SSAO
+    // Describe and create render target
+    RenderTargetArgs rtDesc = {};
+    rtDesc.width = Settings::width;
+    rtDesc.height = Settings::height;
+    rtDesc.nbColors = (int)globalColorBufferFormats.size();
+    rtDesc.formats = globalColorBufferFormats;
+    rtDesc.depth = true;
+    rtDesc.clearColor = true;
+    rtDesc.clearDepth = true;
+    std::cout << "Global prepass creation" << std::endl;
+    this->globalPrepass = device->CreateRenderTarget(rtDesc);
 
+    std::vector<InternalFormat> diffuseColorBufferFormats;
+    diffuseColorBufferFormats.push_back(InternalFormat::RGB8);
+    std::cout << "Diffuse prepass creation" << std::endl;
     this->diffusePass = device->CreateRenderTarget(
-        {Settings::width, Settings::height, 1, true, true, true});
+        {Settings::width, Settings::height, 1, diffuseColorBufferFormats, true,
+         true, true});
 
     // Extract textures from render targets
     this->forGlobalTextures.push_back(this->depthPrepass.depthTexture);

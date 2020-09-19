@@ -7,6 +7,7 @@
 
 #include <GL/glew.h>
 
+#include <optional>
 #include <vector>
 
 #include "../common/Array.h"
@@ -58,12 +59,14 @@ struct InputLayoutArgs {
 };
 
 enum TextureFormat {
+  R = GL_RED,
   RGB = GL_RGB,
   RGBA = GL_RGBA,
   DEPTH = GL_DEPTH_COMPONENT,
 };
 
 enum InternalFormat {
+  R8 = GL_R8,
   RGB8 = GL_RGB8,
   RGBA8 = GL_RGBA8,
   DEPTH24 = GL_DEPTH_COMPONENT24,
@@ -85,7 +88,8 @@ struct MeshSpec {
 
 struct RenderTargetArgs {
   int width, height;
-  int color;
+  int nbColors;                                        // How many color buffers
+  std::optional<std::vector<InternalFormat>> formats;  // Type of color buffers
   bool depth;
   bool clearColor, clearDepth;
 };

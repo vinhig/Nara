@@ -110,11 +110,12 @@ RenderTarget Device<T>::CreateRenderTarget(RenderTargetArgs renderTargetDesc) {
     throw std::runtime_error("A render target cannot render to 0 textures.");
   }
 
-  uint32_t colorTexture = 0;
-  if (renderTargetDesc.color) {
-    colorTexture = this->gl->CreateTexture(
-        renderTargetDesc.width, renderTargetDesc.height, InternalFormat::RGB8);
+  std::vector<uint32_t> colorTexture;
+  for (int i = 0; i < renderTargetDesc.color; i++) {
+    colorTexture.push_back(this->gl->CreateTexture(
+        renderTargetDesc.width, renderTargetDesc.height, InternalFormat::RGB8));
   }
+
   uint32_t depthTexture = 0;
   if (renderTargetDesc.depth) {
     depthTexture =
@@ -155,12 +156,20 @@ void Device<T>::UpdateUbo(uint32_t buffer, void *data, size_t size) {
 
 template <typename T>
 void Device<T>::EatFrame(Frame *frame) {
+  std::cout << "\tEating Frame" << std::endl;
   // Where to draw
   this->gl->UseRenderTarget(frame->GetRenderTarget());
+  // Clean
+  this->gl->ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+  this->gl->Clear(true, true);
   // How to draw
   this->gl->UseProgram(frame->GetProgramSingle());
   // Tools to draw
   this->gl->UseUniform(frame->GetPointOfView());
+  // Global textures to use
+  this->gl->UseTextures(frame->GetTextures());
+
+  int bindingOffset[2] = {frame->GetTextures().size(), 1};
 
   uint32_t previousUniformBuffer = 0;
   for (size_t i = 0; i < frame->singleDrawCallsCount; i++) {
@@ -172,7 +181,7 @@ void Device<T>::EatFrame(Frame *frame) {
       throw std::runtime_error("Suspect ibo to be illformed.");
     }
     this->gl->DrawSingle(drawCall.vao, drawCall.ibo, drawCall.textures,
-                         drawCall.uniforms, drawCall.count);
+                         drawCall.uniforms, &bindingOffset[0], drawCall.count);
   }
 
   this->gl->UseProgram(frame->GetProgramInstanced());
@@ -180,7 +189,8 @@ void Device<T>::EatFrame(Frame *frame) {
     auto drawCall = frame->instancedDrawCalls[i];
     this->gl->DrawInstanced(drawCall.target.vao, drawCall.target.ibo,
                             drawCall.target.textures, drawCall.target.uniforms,
-                            drawCall.target.count, drawCall.primcount);
+                            bindingOffset, drawCall.target.count,
+                            drawCall.primcount);
   }
 }
 

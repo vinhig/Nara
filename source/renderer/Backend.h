@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <vector>
 
 #include "../common/Array.h"
 #include "../renderer/Args.h"
@@ -30,21 +31,23 @@ class Backend {
   virtual uint32_t CreateVao(InputLayoutArgs inputLayout) = 0;
   virtual uint32_t CreateProgram(std::string vertexShader,
                                  std::string fragmentShader) = 0;
-  virtual uint32_t CreateRenderTarget(uint32_t colorTexture,
+  virtual uint32_t CreateRenderTarget(std::vector<uint32_t> textures,
                                       uint32_t depthTexture) = 0;
   virtual uint32_t CreateTexture(int width, int height,
                                  InternalFormat internalFormat) = 0;
   virtual uint32_t CreateTexture(TextureSpec textureSpec) = 0;
   virtual void DrawSingle(uint32_t vao, uint32_t ibo, Array<uint32_t>* textures,
-                          Array<uint32_t>* uniforms, int count) = 0;
+                          Array<uint32_t>* uniforms, int* bindingOffset,
+                          int count) = 0;
   virtual void DrawInstanced(uint32_t vao, uint32_t ibo,
                              Array<uint32_t>* textures,
-                             Array<uint32_t>* uniforms, int count,
-                             int primcount) = 0;
+                             Array<uint32_t>* uniforms, int* bindingOffset,
+                             int count, int primcount) = 0;
   virtual void UpdateBuffer(uint32_t buffer, void* data, size_t size) = 0;
   virtual void UseProgram(uint32_t program) = 0;
   virtual void UseRenderTarget(RenderTarget renderTarget) = 0;
   virtual void UseUniform(uint32_t uniform) = 0;
+  virtual void UseTextures(std::vector<uint32_t> textures) = 0;
 
   // Device methods
   virtual int Height() = 0;

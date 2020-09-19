@@ -40,20 +40,22 @@ class BackendOgl : public Backend {
   uint32_t CreateVao(InputLayoutArgs inputLayout) override;
   uint32_t CreateProgram(std::string vertexShader,
                          std::string fragmentShader) override;
-  uint32_t CreateRenderTarget(uint32_t colorTexture,
+  uint32_t CreateRenderTarget(std::vector<uint32_t> colorTexture,
                               uint32_t depthTexture) override;
   uint32_t CreateTexture(int width, int height,
                          InternalFormat internalFormat) override;
   uint32_t CreateTexture(TextureSpec textureSpec) override;
   void DrawSingle(uint32_t vao, uint32_t ibo, Array<uint32_t> *textures,
-                  Array<uint32_t> *uniforms, int count) override;
+                  Array<uint32_t> *uniforms, int *bindingOffset,
+                  int count) override;
   void DrawInstanced(uint32_t vao, uint32_t ibo, Array<uint32_t> *textures,
-                     Array<uint32_t> *uniforms, int count,
+                     Array<uint32_t> *uniforms, int *bindingOffset, int count,
                      int primcount) override;
   void UpdateBuffer(uint32_t buffer, void *data, size_t size) override;
   void UseProgram(uint32_t program) override;
   void UseRenderTarget(RenderTarget renderTarget) override;
   void UseUniform(uint32_t uniform) override;
+  void UseTextures(std::vector<uint32_t> textures) override;
 
   // Device methods
   int Height() override { return this->height; };

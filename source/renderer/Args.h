@@ -7,6 +7,8 @@
 
 #include <GL/glew.h>
 
+#include <vector>
+
 #include "../common/Array.h"
 
 /**
@@ -83,13 +85,14 @@ struct MeshSpec {
 
 struct RenderTargetArgs {
   int width, height;
-  bool color, depth;
+  int color;
+  bool depth;
   bool clearColor, clearDepth;
 };
 
 struct RenderTarget {
   uint32_t framebuffer;
-  uint32_t colorTexture;
+  std::vector<uint32_t> colorTexture;
   uint32_t depthTexture;
   int width, height;
   bool clearColor, clearDepth;

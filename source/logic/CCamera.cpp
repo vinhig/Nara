@@ -15,7 +15,7 @@ void CCamera::Initialize() {
   std::cout << "INITIATING CCamera" << std::endl;
   // Default
   this->fov = 70;
-  this->position = glm::vec3(4.0f, 4.0f, 4.0f);
+  this->position = glm::vec3(3.0f, 4.5f, 3.0f);
   this->lookAt = glm::vec3(0.0f, 0.0f, 0.0f);
 
   this->view =

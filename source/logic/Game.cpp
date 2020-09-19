@@ -99,7 +99,7 @@ void Game<T>::Run() {
   Entity *terrain = new Entity(this->world);
 
   CTerrain *terrainCTerrain = terrain->GetOrCreate<CTerrain>();
-  terrainCTerrain->width = 10;
+  terrainCTerrain->width = 30;
   terrainCTerrain->precision = 20;
 
   CCamera *cameraCCamera = camera->GetOrCreate<CCamera>();
@@ -235,9 +235,9 @@ void Game<T>::Run() {
     monkey->GetOrCreate<CTransform>()->SetRotation(
         glm::vec3(moove, 0.0f, moove));
 
-    sphere->GetOrCreate<CTransform>()->SetPosition(
-        glm::vec3((float)cos(moove / 30.0f) * 2.0f, 0.0f,
-                  (float)sin(moove / 30.0f) * 2.0f));
+    sphere->GetOrCreate<CTransform>()->SetPosition(glm::vec3(
+        (float)cos(moove / 30.0f) * 2.0f, (float)cos(moove / 30.0f) * 2.0f,
+        (float)sin(moove / 30.0f) * 2.0f));
 
     moove += 2.0f;
 

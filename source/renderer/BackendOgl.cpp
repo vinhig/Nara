@@ -4,6 +4,8 @@
 
 #include "BackendOgl.h"
 
+#include <vector>
+
 #include "Settings.h"
 
 // Constructor
@@ -103,16 +105,26 @@ uint32_t BackendOgl::CreateProgram(std::string vertexShaderPath,
   return program;
 }
 
-uint32_t BackendOgl::CreateRenderTarget(uint32_t colorTexture,
+uint32_t BackendOgl::CreateRenderTarget(std::vector<uint32_t> textures,
                                         uint32_t depthTexture) {
   uint32_t fbo = 0;
+  std::vector<GLenum> buffers;
   glCreateFramebuffers(1, &fbo);
-  if (colorTexture) {
-    glNamedFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0, colorTexture, 0);
+  for (int i = 0; i < textures.size(); i++) {
+    glNamedFramebufferTexture(fbo, GL_COLOR_ATTACHMENT0 + i, textures[i], 0);
+    buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
   }
 
   if (depthTexture) {
     glNamedFramebufferTexture(fbo, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+  }
+
+  glNamedFramebufferDrawBuffers(fbo, buffers.size(), buffers.data());
+
+  auto err = glCheckNamedFramebufferStatus(fbo, GL_FRAMEBUFFER);
+
+  if (err != GL_FRAMEBUFFER_COMPLETE) {
+    throw std::runtime_error("Unable to create a proper render target");
   }
 
   return fbo;
@@ -125,7 +137,6 @@ uint32_t BackendOgl::CreateTexture(int width, int height,
   glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTextureStorage2D(texture, 1, internalFormat, width, height);
-
   return texture;
 }
 
@@ -150,7 +161,8 @@ uint32_t BackendOgl::CreateTexture(TextureSpec textureSpec) {
 
 void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
                             Array<uint32_t> *textures,
-                            Array<uint32_t> *uniforms, int count) {
+                            Array<uint32_t> *uniforms, int *bindingOffset,
+                            int count) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
   }
@@ -165,7 +177,9 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
     if (textures->Get(i) == 0) {
       throw std::runtime_error("Null texture.");
     }
-    glBindTextureUnit(i, textures->Get(i));
+    std::cout << "\t\tBinding GL_TEXTURE2D to " << i + bindingOffset[0]
+              << std::endl;
+    glBindTextureUnit(i + bindingOffset[0], textures->Get(i));
   }
   if (previousIbo != ibo) {
     previousIbo = ibo;
@@ -175,7 +189,9 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
     if (uniforms->Get(i) == 0) {
       throw std::runtime_error("Null uniform buffer.");
     }
-    glBindBufferBase(GL_UNIFORM_BUFFER, i + 1, uniforms->Get(i));
+    std::cout << "\t\tBinding GL_UNIFORM_BUFFER to " << i + bindingOffset[1]
+              << std::endl;
+    glBindBufferBase(GL_UNIFORM_BUFFER, i + bindingOffset[1], uniforms->Get(i));
   }
 
   glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
@@ -183,8 +199,8 @@ void BackendOgl::DrawSingle(uint32_t vao, uint32_t ibo,
 
 void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
                                Array<uint32_t> *textures,
-                               Array<uint32_t> *uniforms, int count,
-                               int primcount) {
+                               Array<uint32_t> *uniforms, int *bindingOffset,
+                               int count, int primcount) {
   if (vao <= 0 || ibo <= 0) {
     std::runtime_error("Bad vertex array object or index buffer object.");
   }
@@ -197,7 +213,7 @@ void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
     if (textures->Get(i) == 0) {
       throw std::runtime_error("Null texture.");
     }
-    glBindTextureUnit(i, textures->Get(i));
+    glBindTextureUnit(i + bindingOffset[0], textures->Get(i));
   }
   if (previousIbo != ibo) {
     previousIbo = ibo;
@@ -207,7 +223,7 @@ void BackendOgl::DrawInstanced(uint32_t vao, uint32_t ibo,
     if (uniforms->Get(i) == 0) {
       throw std::runtime_error("Null uniform buffer.");
     }
-    glBindBufferBase(GL_UNIFORM_BUFFER, i + 1, uniforms->Get(i));
+    glBindBufferBase(GL_UNIFORM_BUFFER, i + bindingOffset[1], uniforms->Get(i));
   }
 
   glDrawElementsInstanced(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr,
@@ -227,6 +243,12 @@ void BackendOgl::UseRenderTarget(RenderTarget renderTarget) {
 
 void BackendOgl::UseUniform(uint32_t uniform) {
   glBindBufferBase(GL_UNIFORM_BUFFER, 0, uniform);
+}
+
+void BackendOgl::UseTextures(std::vector<uint32_t> textures) {
+  for (int i = 0; i < textures.size(); i++) {
+    glBindTextureUnit(i, textures[i]);
+  }
 }
 
 // Device methods

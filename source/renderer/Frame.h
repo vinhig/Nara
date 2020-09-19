@@ -98,6 +98,7 @@ class Frame {
   uint32_t GetProgramSingle() { return this->programSingle; }
   uint32_t GetProgramInstanced() { return this->programInstanced; }
   RenderTarget GetRenderTarget() { return this->renderTarget; }
+  std::vector<uint32_t> GetTextures() { return this->textures; }
 
   void SetProgramSingle(uint32_t program) {
     // Set
@@ -113,6 +114,9 @@ class Frame {
   void SetRenderTarget(RenderTarget renderTarget) {
     this->renderTarget = renderTarget;
   };
+  void SetTextures(std::vector<uint32_t> textures) {
+    this->textures = textures;
+  }
 
   // void AddDCSingle(DCSingle singleDrawCall);
   // void AddDCInstanced(DCInstanced instancedDrawCall);

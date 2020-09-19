@@ -24,6 +24,8 @@ class RenderGraph {
    */
   RenderTarget lightPrepass[3];
 
+  RenderTarget globalPrepass;
+
   // Color render target
   /**
    * Diffuse pass.
@@ -41,11 +43,15 @@ class RenderGraph {
   uint32_t basicProgram;
   uint32_t ibasicProgram;
   uint32_t depthProgram;
+  uint32_t globalProgram;
 
   // Uniform buffers
   // Set from Game state
   uint32_t pointOfView;
   std::vector<uint32_t> lightsOfView;
+
+  // Render targets textures
+  std::vector<uint32_t> forGlobalTextures;
 
  public:
   std::vector<DCSingle> singleCalls;
@@ -58,20 +64,28 @@ class RenderGraph {
   void Initialize(D* device) {
     singleCalls.reserve(128);
     instancedCalls.reserve(128);
+
     // Create a render target for each render target
     this->depthPrepass = device->CreateRenderTarget(
         {Settings::width, Settings::height, false, true, false, true});
+    this->globalPrepass = device->CreateRenderTarget(
+        {Settings::width, Settings::height, 2, true, false, true});
 
     this->diffusePass = device->CreateRenderTarget(
-        {Settings::width, Settings::height, true, true, true, true});
+        {Settings::width, Settings::height, 1, true, true, true});
+
+    // Extract textures from render targets
+    this->forGlobalTextures.push_back(this->depthPrepass.depthTexture);
 
     this->basicProgram = device->CreateProgram("assets/shaders/basic");
     this->ibasicProgram = device->CreateProgram("assets/shaders/ibasic");
     this->depthProgram = device->CreateProgram("assets/shaders/depth");
+    this->globalProgram = device->CreateProgram("assets/shaders/global");
   }
 
   template <typename D>
   void Draw(D* device) {
+    std::cout << "RenderGraph->Draw()" << std::endl;
     // Compose and eat frame
     Frame* depthFrame = device->SpawnFrame();
 
@@ -87,7 +101,28 @@ class RenderGraph {
 
     depthFrame->SetRenderTarget(this->depthPrepass);
 
+    std::cout << "(Depth Frame)" << std::endl;
+
     device->EatFrame(depthFrame);
+
+    Frame* globalFrame = device->SpawnFrame();
+
+    globalFrame->SetPointOfView(this->pointOfView);
+    globalFrame->SetTextures(forGlobalTextures);
+
+    globalFrame->singleDrawCalls = this->singleCalls.data();
+    globalFrame->singleDrawCallsCount = this->singleCalls.size();
+    globalFrame->instancedDrawCalls = this->instancedCalls.data();
+    globalFrame->instancedDrawCallsCount = this->instancedCalls.size();
+
+    globalFrame->SetProgramSingle(this->globalProgram);
+    globalFrame->SetProgramInstanced(this->globalProgram);
+
+    globalFrame->SetRenderTarget(this->globalPrepass);
+
+    std::cout << "(Global Frame)" << std::endl;
+
+    device->EatFrame(globalFrame);
 
     Frame* diffuseFrame = device->SpawnFrame();
 
@@ -103,6 +138,7 @@ class RenderGraph {
 
     diffuseFrame->SetRenderTarget(this->diffusePass);
 
+    std::cout << "(Diffuse Frame)" << std::endl;
     device->EatFrame(diffuseFrame);
 
     device->BlitOnScreen(this->diffusePass);

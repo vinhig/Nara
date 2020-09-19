@@ -103,6 +103,9 @@ MeshSpec FbxMeshLoader::Load(std::string path) {
       subVerticesBuffer[j * stride + 4] = (float)normals[j].y;
       subVerticesBuffer[j * stride + 5] = (float)normals[j].z;
 
+      std::cout << (float)normals[j].x << " " << (float)normals[j].y << " "
+                << (float)normals[j].z << std::endl;
+
       subVerticesBuffer[j * stride + 6] = (float)uvs[j].x;
       subVerticesBuffer[j * stride + 7] = (float)uvs[j].y;
 

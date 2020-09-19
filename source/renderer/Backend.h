@@ -34,7 +34,8 @@ class Backend {
   virtual uint32_t CreateRenderTarget(std::vector<uint32_t> textures,
                                       uint32_t depthTexture) = 0;
   virtual uint32_t CreateTexture(int width, int height,
-                                 InternalFormat internalFormat) = 0;
+                                 InternalFormat internalFormat,
+                                 TextureWrap wrap) = 0;
   virtual uint32_t CreateTexture(TextureSpec textureSpec) = 0;
   virtual void DrawSingle(uint32_t vao, uint32_t ibo, Array<uint32_t>* textures,
                           Array<uint32_t>* uniforms, int* bindingOffset,

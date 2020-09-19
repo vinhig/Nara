@@ -58,6 +58,12 @@ struct InputLayoutArgs {
   Array<InputLayoutEntryArgs> entries;
 };
 
+enum TextureWrap {
+  Repeat = GL_REPEAT,  // Default in many methods
+  MirroredRepeat = GL_MIRRORED_REPEAT,
+  ClampToEdge = GL_CLAMP_TO_EDGE,
+};
+
 enum TextureFormat {
   R = GL_RED,
   RGB = GL_RGB,
@@ -77,6 +83,7 @@ struct TextureSpec {
   int height;
   unsigned char* data;
   TextureFormat format;
+  TextureWrap wrap;
 };
 
 struct MeshSpec {

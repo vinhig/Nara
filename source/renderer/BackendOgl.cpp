@@ -131,9 +131,12 @@ uint32_t BackendOgl::CreateRenderTarget(std::vector<uint32_t> textures,
 }
 
 uint32_t BackendOgl::CreateTexture(int width, int height,
-                                   InternalFormat internalFormat) {
+                                   InternalFormat internalFormat,
+                                   TextureWrap wrap) {
   uint32_t texture;
   glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_S, wrap);
+  glTextureParameteri(texture, GL_TEXTURE_WRAP_T, wrap);
   glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTextureStorage2D(texture, 1, internalFormat, width, height);

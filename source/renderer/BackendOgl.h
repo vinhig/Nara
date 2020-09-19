@@ -42,8 +42,8 @@ class BackendOgl : public Backend {
                          std::string fragmentShader) override;
   uint32_t CreateRenderTarget(std::vector<uint32_t> colorTexture,
                               uint32_t depthTexture) override;
-  uint32_t CreateTexture(int width, int height,
-                         InternalFormat internalFormat) override;
+  uint32_t CreateTexture(int width, int height, InternalFormat internalFormat,
+                         TextureWrap wrap) override;
   uint32_t CreateTexture(TextureSpec textureSpec) override;
   void DrawSingle(uint32_t vao, uint32_t ibo, Array<uint32_t> *textures,
                   Array<uint32_t> *uniforms, int *bindingOffset,

@@ -19,9 +19,9 @@ TextureSpec DefaultTextureLoader::Load(std::string path) {
 
   switch (nrChannels) {
     case 4:
-      return {width, height, data, TextureFormat::RGBA};
+      return {width, height, data, TextureFormat::RGBA, TextureWrap::Repeat};
     case 3:
-      return {width, height, data, TextureFormat::RGB};
+      return {width, height, data, TextureFormat::RGB, TextureWrap::Repeat};
 
     default:
       throw std::runtime_error("Unknown image format.");

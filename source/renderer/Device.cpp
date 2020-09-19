@@ -113,16 +113,16 @@ RenderTarget Device<T>::CreateRenderTarget(RenderTargetArgs renderTargetDesc) {
   std::vector<uint32_t> colorTexture;
   for (int i = 0; i < renderTargetDesc.nbColors; i++) {
     std::cout << "\tCreating texture" << std::endl;
-    colorTexture.push_back(
-        this->gl->CreateTexture(renderTargetDesc.width, renderTargetDesc.height,
-                                renderTargetDesc.formats.value()[i]));
+    colorTexture.push_back(this->gl->CreateTexture(
+        renderTargetDesc.width, renderTargetDesc.height,
+        renderTargetDesc.formats.value()[i], TextureWrap::Repeat));
   }
 
   uint32_t depthTexture = 0;
   if (renderTargetDesc.depth) {
     depthTexture =
         this->gl->CreateTexture(renderTargetDesc.width, renderTargetDesc.height,
-                                InternalFormat::DEPTH24);
+                                InternalFormat::DEPTH24, TextureWrap::Repeat);
   }
 
   uint32_t fbo = this->gl->CreateRenderTarget(colorTexture, depthTexture);
@@ -138,7 +138,29 @@ RenderTarget Device<T>::CreateRenderTarget(RenderTargetArgs renderTargetDesc) {
 
 template <typename T>
 uint32_t Device<T>::CreateTexture(TextureSpec textureSpec) {
-  return this->gl->CreateTexture(textureSpec);
+  if (textureSpec.data != nullptr) {
+    return this->gl->CreateTexture(textureSpec);
+  }
+  InternalFormat format;
+  switch (textureSpec.format) {
+    case TextureFormat::R:
+      format = InternalFormat::R8;
+      break;
+    case TextureFormat::RGB:
+      format = InternalFormat::RGB8;
+      break;
+    case TextureFormat::RGBA:
+      format = InternalFormat::RGBA8;
+      break;
+    case TextureFormat::DEPTH:
+      format = InternalFormat::DEPTH24;
+      break;
+
+    default:
+      break;
+  }
+  return this->gl->CreateTexture(textureSpec.width, textureSpec.height, format,
+                                 textureSpec.wrap);
 }
 
 template <typename T>

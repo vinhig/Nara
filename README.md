@@ -18,7 +18,7 @@ It doesn't feature any advanced rendering technics but a simple deferred renderi
 
 ## Building
 
-Sadly, this project just works on Linux as it uses some non-portable components. You'll need to fetch those dependencies:
+You'll need to fetch those dependencies:
 
 * GLFW
 * GLEW

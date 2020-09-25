@@ -37,6 +37,7 @@ git submodule init
 git submodule update
 mkdir build
 cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE="C:\path\to\your\vcpkg\scripts\buildsystems\vcpkg.cmake"
 MSBuild.exe Nara.sln
 cd ../
 ./build/Debug/Attempt.exe

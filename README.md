@@ -18,6 +18,32 @@ It doesn't feature any advanced rendering technics but a simple deferred renderi
 
 ## Building
 
+### Windows
+
+You can use `vcpkg` to include dependencies.
+
+```
+vpckg install glew:x64-windows
+vpckg install glm:x64-windows
+vpckg install glfw:x64-windows
+```
+
+Then you can generate and compile the project:
+
+```
+git clone https://github.com/vinhig/Nara
+cd Nara
+git submodule init
+git submodule update
+mkdir build
+cd build
+MSBuild.exe Nara.sln
+cd ../
+./build/Debug/Attempt.exe
+```
+
+### GNU/Linux
+
 You'll need to fetch those dependencies:
 
 * GLFW

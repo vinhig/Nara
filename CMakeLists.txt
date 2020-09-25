@@ -9,6 +9,7 @@ add_subdirectory(source/tests)
 find_package(glfw3 3.3 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(glm REQUIRED)
 find_package(Threads REQUIRED)
 
 include_directories(libraries/)
@@ -50,16 +51,22 @@ add_library(renderer
     source/renderer/RenderGraph.h source/renderer/RenderGraph.cpp
 )
 
-add_executable(Nara
+add_executable(Attempt
     source/main.cpp
 )
 
-target_link_libraries(Nara common)
-target_link_libraries(Nara logic)
-target_link_libraries(Nara renderer)
-target_link_libraries(Nara loader)
-target_link_libraries(Nara openfbx)
-target_link_libraries(Nara glfw)
-target_link_libraries(Nara OpenGL::GL)
-target_link_libraries(Nara GLEW::GLEW)
-target_link_libraries(Nara Threads::Threads)
+target_link_libraries(Attempt common)
+target_link_libraries(Attempt logic)
+target_link_libraries(Attempt renderer)
+target_link_libraries(Attempt loader)
+target_link_libraries(Attempt openfbx)
+
+target_link_libraries(renderer glfw)
+target_link_libraries(renderer OpenGL::GL)
+target_link_libraries(renderer GLEW::GLEW)
+
+target_link_libraries(loader GLEW::GLEW)
+
+target_link_libraries(logic glm)
+
+target_link_libraries(Attempt Threads::Threads)

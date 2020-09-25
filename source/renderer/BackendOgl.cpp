@@ -62,11 +62,10 @@ uint32_t BackendOgl::CreateVao(InputLayoutArgs inputLayout) {
   return vao;
 }
 
-uint32_t CompileShader(std::string source, GLenum shaderType) {
+uint32_t CompileShader(const char* source, GLenum shaderType) {
   // Compile shader
   uint32_t shader = glCreateShader(shaderType);
-  char const *csources = (source).c_str();
-  glShaderSource(shader, 1, &csources, nullptr);
+  glShaderSource(shader, 1, &source, NULL);
   glCompileShader(shader);
 
   // Check result
@@ -78,6 +77,7 @@ uint32_t CompileShader(std::string source, GLenum shaderType) {
     char *errorMsg = new char[infoLength + 1];
     glGetShaderInfoLog(shader, infoLength, NULL, &errorMsg[0]);
     std::cout << source << std::endl;
+    std::cout << errorMsg << std::endl;
     throw std::runtime_error(errorMsg);
   }
 
@@ -88,9 +88,9 @@ uint32_t BackendOgl::CreateProgram(std::string vertexShaderPath,
                                    std::string fragmentShaderPath) {
   // Read and compile shaders
   std::string vertexSource = File::ReadAllFile(vertexShaderPath);
-  uint32_t vertexShader = CompileShader(vertexSource, GL_VERTEX_SHADER);
+  uint32_t vertexShader = CompileShader(vertexSource.c_str(), GL_VERTEX_SHADER);
   std::string fragmentSource = File::ReadAllFile(fragmentShaderPath);
-  uint32_t fragmentShader = CompileShader(fragmentSource, GL_FRAGMENT_SHADER);
+  uint32_t fragmentShader = CompileShader(fragmentSource.c_str(), GL_FRAGMENT_SHADER);
 
   // Create corresponding program
   uint32_t program = glCreateProgram();

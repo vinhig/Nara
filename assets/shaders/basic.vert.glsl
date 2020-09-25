@@ -1,4 +1,4 @@
-#version 460 core
+#version 450 core
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
@@ -13,8 +13,6 @@ layout(std140, binding = 0) uniform Scene {
 };
 
 layout(std140, binding = 1) uniform Object { mat4 model; };
-
-// uniform mat4 model;
 
 void main() {
   o_color = color;

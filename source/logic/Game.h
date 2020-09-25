@@ -32,7 +32,7 @@ class Game {
  private:
   int width, height;
 
-  uint currentFrame = 0;
+  // uint currentFrame = 0;
 
   std::vector<std::thread> workers;
   std::deque<Job> jobs;

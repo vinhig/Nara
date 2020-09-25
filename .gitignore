@@ -4,3 +4,5 @@ cmake-*/
 .vscode/
 .idea/
 libraries/
+CMakeFiles/
+.vs/
